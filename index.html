@@ -480,10 +480,6 @@ function showKeyOverlay(){
   if(k) document.getElementById('key-input').value=k;
   document.getElementById('key-overlay').style.display='flex';
 }
-window.addEventListener('DOMContentLoaded',()=>{
-  if(!getApiKey()) document.getElementById('key-overlay').style.display='flex';
-  document.getElementById('key-input').addEventListener('keydown',e=>{ if(e.key==='Enter') saveApiKey(); });
-});
 
 // ═══════════════════════════════════════════════════════
 //  SYSTEM PROMPT
@@ -1007,8 +1003,8 @@ async function exportToPDF(aid, questionTitle, bw){
 //  API CALL
 // ═══════════════════════════════════════════════════════
 // ── Set your Cloudflare Worker URL here ──
-const WORKER_URL='https://ask-doctrine.1stechodesign.workers.dev';
-function isWorkerMode(){ return WORKER_URL&&WORKER_URL!='YOUR_WORKER_URL_HERE'; }
+const WORKER_URL='https://ask-doctrine.1stechodesign.workers.dev
+function isWorkerMode(){ return WORKER_URL&&WORKER_URL!='https://ask-doctrine.1stechodesign.workers.dev'; }
 
 async function callClaude(userQuestion){
   conversationHistory.push({role:'user',content:userQuestion});
@@ -1159,6 +1155,26 @@ function toggleMic(){
 }
 
 // Init mic check on load
+// ── MAIN STARTUP ──────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  // Record first visit date for 30-day rolling reset
+  if(!localStorage.getItem('ad_signup')){
+    localStorage.setItem('ad_signup',new Date().toISOString());
+    localStorage.setItem('ad_period','0');
+  }
+  resetIfNewPeriod();
+
+  // Startup flow: ToS → Tier → App
+  if(!checkTos()){
+    document.getElementById('tos-overlay').classList.add('open');
+  } else if(!getTier()){
+    showTierOverlay();
+  } else {
+    updateQueryBar();
+  }
+});
+
+// ── MIC CHECK ─────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
   const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SpeechRecognition){
