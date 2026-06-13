@@ -1003,8 +1003,8 @@ async function exportToPDF(aid, questionTitle, bw){
 //  API CALL
 // ═══════════════════════════════════════════════════════
 // ── Set your Cloudflare Worker URL here ──
-const WORKER_URL='https://ask-doctrine.1stechodesign.workers.dev
-function isWorkerMode(){ return WORKER_URL&&WORKER_URL!='https://ask-doctrine.1stechodesign.workers.dev'; }
+const WORKER_URL='https://ask-doctrine.1stechodesign.workers.dev';
+function isWorkerMode(){ return typeof WORKER_URL==='string'&&WORKER_URL.length>10&&WORKER_URL.indexOf('workers.dev')>-1||WORKER_URL.indexOf('http')===0&&WORKER_URL.indexOf('YOUR')===-1; }
 
 async function callClaude(userQuestion){
   conversationHistory.push({role:'user',content:userQuestion});
