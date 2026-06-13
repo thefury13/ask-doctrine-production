@@ -217,8 +217,6 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
   padding:24px 16px 48px;
   backdrop-filter:blur(6px);
 }
-#tier-overlay.open{display:block !important;}
-#tier-overlay.hidden{display:none !important;}
 #tier-modal{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:4px;padding:22px 18px;max-width:680px;width:100%;margin:0 auto;box-shadow:0 8px 48px rgba(0,0,0,.8);}
 #tier-modal h2{font-family:'Cinzel Decorative',serif;font-size:clamp(15px,3vw,20px);color:var(--gold);text-align:center;margin-bottom:6px;letter-spacing:.06em;}
 .tier-subtitle{font-style:italic;color:var(--parchment-dim);font-size:13px;text-align:center;margin-bottom:16px;}
@@ -462,6 +460,95 @@ function acceptTos(){
   else updateQueryBar();
 }
 function hasPDF(){ const t=TIERS[getTier()]; return !!(t&&t.pdf); }
+
+// ── COMPLETE TIER SYSTEM ──────────────────────────────────────
+const TIERS={
+  basic:   {name:'Basic',   price:'$4.99/mo', limit:40,  pdf:false},
+  pro:     {name:'Pro',     price:'$12.99/mo',limit:100, pdf:true},
+  ministry:{name:'Ministry',price:'$24.99/mo',limit:null,pdf:true}
+};
+function getTier(){ return localStorage.getItem('ad_tier')||''; }
+function getCount(){ return parseInt(localStorage.getItem('ad_count')||'0',10); }
+
+function resetIfNewPeriod(){
+  const signup=localStorage.getItem('ad_signup');
+  if(!signup) return;
+  const daysSince=Math.floor((new Date()-new Date(signup))/86400000);
+  const period=Math.floor(daysSince/30);
+  const lastPeriod=parseInt(localStorage.getItem('ad_period')||'0',10);
+  if(period>lastPeriod){
+    localStorage.setItem('ad_count','0');
+    localStorage.setItem('ad_period',String(period));
+  }
+}
+function getDaysUntilReset(){
+  const signup=localStorage.getItem('ad_signup');
+  if(!signup) return 30;
+  const daysSince=Math.floor((new Date()-new Date(signup))/86400000);
+  return 30-(daysSince%30);
+}
+function canQuery(){
+  const t=TIERS[getTier()];
+  if(!t) return false;
+  if(t.limit===null) return true;
+  return getCount()<t.limit;
+}
+function incrementCount(){
+  resetIfNewPeriod();
+  localStorage.setItem('ad_count',String(getCount()+1));
+  updateQueryBar();
+}
+function showTierOverlay(){
+  const el=document.getElementById('tier-overlay');
+  if(el){ el.style.display='block'; }
+}
+function hideTierOverlay(){
+  const el=document.getElementById('tier-overlay');
+  if(el){ el.style.display='none'; }
+}
+function selectTier(tier){
+  const prev=getTier();
+  localStorage.setItem('ad_tier',tier);
+  if(prev!==tier) localStorage.setItem('ad_count','0');
+  if(!localStorage.getItem('ad_signup')){
+    localStorage.setItem('ad_signup',new Date().toISOString());
+    localStorage.setItem('ad_period','0');
+  }
+  hideTierOverlay();
+  updateQueryBar();
+}
+function updateQueryBar(){
+  const tier=getTier();
+  if(!tier) return;
+  const t=TIERS[tier];
+  resetIfNewPeriod();
+  const count=getCount();
+  const bar=document.getElementById('query-bar');
+  const fill=document.getElementById('qbar-fill');
+  const countEl=document.getElementById('qbar-count');
+  const nameEl=document.getElementById('qbar-tier-name');
+  if(!bar) return;
+  bar.classList.remove('hidden');
+  if(nameEl) nameEl.textContent=t.name;
+  if(t.limit===null){
+    if(countEl) countEl.textContent=count+' queries (Unlimited)';
+    if(fill){ fill.style.width='20%'; fill.className='qbar-fill'; }
+  } else {
+    const pct=Math.min(100,Math.round((count/t.limit)*100));
+    const days=getDaysUntilReset();
+    if(countEl) countEl.textContent=count+' / '+t.limit+' \u2022 resets in '+days+'d';
+    if(fill){ fill.style.width=pct+'%'; fill.className='qbar-fill'+(pct>=90?' danger':pct>=70?' warn':''); }
+  }
+  document.querySelectorAll('.export-btn').forEach(btn=>{
+    if(!hasPDF()){
+      btn.classList.add('pdf-locked');
+      btn.title='PDF Export \u2014 Pro & Ministry only';
+      btn.onclick=(e)=>{ e.stopPropagation(); showTierOverlay(); };
+    } else {
+      btn.classList.remove('pdf-locked');
+    }
+  });
+}
 
 //  API KEY
 // ═══════════════════════════════════════════════════════
