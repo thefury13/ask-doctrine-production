@@ -159,13 +159,13 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
   position:fixed;inset:0;
   background:rgba(0,0,0,.96);
   z-index:2000;
-  display:none;
+  display:block;
   overflow-y:auto;
   -webkit-overflow-scrolling:touch;
   padding:24px 16px 48px;
   backdrop-filter:blur(6px);
 }
-#tos-overlay.open{display:block !important;}
+#tos-overlay.hidden{display:none !important;}
 #tos-modal{
   background:var(--surface);
   border:1px solid var(--border);
@@ -218,6 +218,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
   backdrop-filter:blur(6px);
 }
 #tier-overlay.open{display:block !important;}
+#tier-overlay.hidden{display:none !important;}
 #tier-modal{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:4px;padding:22px 18px;max-width:680px;width:100%;margin:0 auto;box-shadow:0 8px 48px rgba(0,0,0,.8);}
 #tier-modal h2{font-family:'Cinzel Decorative',serif;font-size:clamp(15px,3vw,20px);color:var(--gold);text-align:center;margin-bottom:6px;letter-spacing:.06em;}
 .tier-subtitle{font-style:italic;color:var(--parchment-dim);font-size:13px;text-align:center;margin-bottom:16px;}
@@ -456,7 +457,7 @@ function checkTos(){ return localStorage.getItem('ad_tos')==='1'; }
 function acceptTos(){
   if(!document.getElementById('tos-check').checked) return;
   localStorage.setItem('ad_tos','1');
-  document.getElementById('tos-overlay').classList.remove('open');
+  document.getElementById('tos-overlay').classList.add('hidden');
   if(!getTier()) showTierOverlay();
   else updateQueryBar();
 }
@@ -1161,8 +1162,8 @@ function toggleMic(){
 // Init mic check on load
 // ── MAIN STARTUP ──────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
-  // Version gate — bump APP_VERSION to force fresh ToS+Tier on all devices
-  var APP_VERSION='1.0';
+  // Version gate — changing APP_VERSION forces fresh ToS+Tier on all devices
+  var APP_VERSION='1.1';
   if(localStorage.getItem('ad_version')!==APP_VERSION){
     localStorage.removeItem('ad_tos');
     localStorage.removeItem('ad_tier');
@@ -1177,14 +1178,17 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
   resetIfNewPeriod();
 
-  // Startup flow: ToS → Tier → App (always in this order)
-  if(!checkTos()){
-    document.getElementById('tos-overlay').classList.add('open');
-  } else if(!getTier()){
-    showTierOverlay();
-  } else {
-    updateQueryBar();
+  // ToS is VISIBLE by default in CSS.
+  // We only HIDE it if the user has already accepted it.
+  if(checkTos()){
+    document.getElementById('tos-overlay').classList.add('hidden');
+    if(!getTier()){
+      showTierOverlay();
+    } else {
+      updateQueryBar();
+    }
   }
+  // If ToS not accepted — it stays visible (no JS needed)
 });
 
 // ── MIC CHECK ─────────────────────────────────────────────────
