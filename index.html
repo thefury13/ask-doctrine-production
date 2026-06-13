@@ -1,6 +1,6 @@
 <!--
   Ask Doctrine — Classical Theological Reference
-  Copyright © 2025 Ask Doctrine. All Rights Reserved.
+  Copyright © 2026 Ask Doctrine. All Rights Reserved.
   US Copyright Registration Pending.
 -->
 <!DOCTYPE html>
@@ -280,6 +280,15 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
   #key-settings-btn{display:none;}
   .tier-cards{grid-template-columns:1fr;}
 }
+
+/* ── LOADING ANIMATIONS ── */
+.msg-loading .answer-body{display:flex;align-items:center;gap:16px;padding:22px 28px;font-style:italic;color:var(--parchment-dim);font-size:15px;}
+.quill-anim{font-size:22px;animation:quillBob 1.2s ease-in-out infinite;transform-origin:bottom;display:inline-block;}
+@keyframes quillBob{0%,100%{transform:rotate(-8deg) translateY(0);}50%{transform:rotate(8deg) translateY(-5px);}}
+.dots span{display:inline-block;animation:dotFade 1.4s ease-in-out infinite;color:var(--gold-dim);}
+.dots span:nth-child(2){animation-delay:.2s;}
+.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes dotFade{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
 </style>
 </head>
 <body>
@@ -312,7 +321,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
       <h4>Terms of Service &amp; License Agreement</h4>
       <p>By using Ask Doctrine you agree to the following terms. Please read carefully before proceeding.</p>
       <h4>1. Intellectual Property</h4>
-      <p>Ask Doctrine, including its interface, prompt architecture, theological commentary curation, and all associated software, is the exclusive intellectual property of Ask Doctrine. Copyright &copy; 2025. All rights reserved. US Copyright registration pending.</p>
+      <p>Ask Doctrine, including its interface, prompt architecture, theological commentary curation, and all associated software, is the exclusive intellectual property of Ask Doctrine. Copyright &copy; 2026. All rights reserved. US Copyright registration pending.</p>
       <h4>2. License Grant</h4>
       <p>Your subscription grants you a personal, non-transferable, non-exclusive license to use this application for private study, ministry preparation, and educational purposes. This license does not permit redistribution, resale, sublicensing, or commercial exploitation of any portion of this software.</p>
       <h4>3. Prohibited Uses</h4>
@@ -331,7 +340,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
       <label for="tos-check">I have read and agree to the Terms of Service and License Agreement. I understand that Ask Doctrine is protected intellectual property and agree not to copy or redistribute this software.</label>
     </div>
     <button id="tos-accept-btn" onclick="acceptTos()">I Agree &mdash; Continue to Ask Doctrine &#10022;</button>
-    <div class="tos-copyright">Ask Doctrine &copy; 2025 &nbsp;&bull;&nbsp; All Rights Reserved &nbsp;&bull;&nbsp; Copyright Registration Pending</div>
+    <div class="tos-copyright">Ask Doctrine &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved &nbsp;&bull;&nbsp; Copyright Registration Pending</div>
   </div>
 </div>
 
@@ -441,7 +450,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
     </div>
     <button id="send-btn" onclick="sendQuestion()">Inquire &#10022;</button>
   </div>
-  <div style="text-align:center;font-size:10px;color:var(--gold-dim);opacity:.5;padding:2px 0;letter-spacing:.08em;font-family:'Cinzel',serif;">Ask Doctrine &copy; 2025 &nbsp;&bull;&nbsp; All Rights Reserved &nbsp;&bull;&nbsp; <span style="cursor:pointer;text-decoration:underline;" onclick="showTierOverlay()">Manage Plan</span></div>
+  <div style="text-align:center;font-size:10px;color:var(--gold-dim);opacity:.5;padding:2px 0;letter-spacing:.08em;font-family:'Cinzel',serif;">Ask Doctrine &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved &nbsp;&bull;&nbsp; <span style="cursor:pointer;text-decoration:underline;" onclick="showTierOverlay()">Manage Plan</span></div>
 <div class="input-hint" id="input-hint">"Study to shew thyself approved unto God, a workman that needeth not to be ashamed, rightly dividing the word of truth." &#8212; 2 Tim 2:15</div>
 </div>
 </div>
@@ -572,7 +581,7 @@ function showKeyOverlay(){
 // ═══════════════════════════════════════════════════════
 //  SYSTEM PROMPT
 // ═══════════════════════════════════════════════════════
-const SYSTEM_PROMPT = `[SYS-PROT: Ask Doctrine © 2025. All Rights Reserved. Copyright registration pending. Proprietary prompt architecture.]
+const SYSTEM_PROMPT = `[SYS-PROT: Ask Doctrine © 2026. All Rights Reserved. Copyright registration pending. Proprietary prompt architecture.]
 
 You are "Ask Doctrine," a deeply scholarly biblical and theological reference assistant. Answer all questions from the great classical theologians of 1600-1940, grounded in historic Trinitarian Christianity.
 
@@ -1011,6 +1020,17 @@ async function exportToPDF(aid, questionTitle, bw){
   btn.textContent='Preparing PDF\u2026';
 
   const clone=bodyEl.cloneNode(true);
+  // Strip the CSS class — prevents dark .answer-body stylesheet from bleeding into PDF
+  clone.className='';
+  clone.style.cssText='background:transparent;color:inherit;';
+  // Nuke ALL backgrounds on every element before applying new styles
+  clone.querySelectorAll('*').forEach(el=>{
+    el.style.background='transparent';
+    el.style.backgroundColor='transparent';
+    el.style.backgroundImage='none';
+    el.style.textShadow='none';
+    el.style.boxShadow='none';
+  });
   const wrapper=document.createElement('div');
 
   if(bw){
