@@ -393,7 +393,10 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
     <div class="tier-note">
       Subscribe at your Gumroad store to activate your plan.<br>
       No API key needed &mdash; everything is handled for you.<br>
-      Queries reset every 30 days from your signup date.
+      Queries reset every 30 days from your signup date.<br><br>
+      <span style="font-family:'Cinzel',serif;font-size:10px;color:var(--gold-dim);letter-spacing:.06em;">
+        Ask Doctrine &mdash; Copyright &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved
+      </span>
     </div>
   </div>
 </div>
@@ -450,7 +453,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
     </div>
     <button id="send-btn" onclick="sendQuestion()">Inquire &#10022;</button>
   </div>
-  <div style="text-align:center;font-size:10px;color:var(--gold-dim);opacity:.5;padding:2px 0;letter-spacing:.08em;font-family:'Cinzel',serif;">Ask Doctrine &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved &nbsp;&bull;&nbsp; <span style="cursor:pointer;text-decoration:underline;" onclick="showTierOverlay()">Manage Plan</span></div>
+  <div style="text-align:center;font-size:10px;color:var(--gold-dim);opacity:.5;padding:2px 0;letter-spacing:.08em;font-family:'Cinzel',serif;">Ask Doctrine &mdash; Copyright &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved &nbsp;&bull;&nbsp; <span style="cursor:pointer;text-decoration:underline;" onclick="showTierOverlay()">Manage Plan</span></div>
 <div class="input-hint" id="input-hint">"Study to shew thyself approved unto God, a workman that needeth not to be ashamed, rightly dividing the word of truth." &#8212; 2 Tim 2:15</div>
 </div>
 </div>
@@ -835,6 +838,26 @@ function buildCitationBlock(itemsHtml){
 // ═══════════════════════════════════════════════════════
 //  MARKDOWN → HTML
 // ═══════════════════════════════════════════════════════
+
+// ── LARKIN CHART LINK INJECTION ──────────────────────────────
+function injectLarkinLinks(html){
+  const url='https://archive.org/details/tamil-christian-ebook-wogbooks-32-bible-charts-in-color-by-clarence-larkin-bw/page/n1/mode/2up';
+  const link=' <a href="'+url+'" target="_blank" rel="noopener" '+
+    'style="font-family:\'Cinzel\',serif;font-size:10.5px;color:#c9a84c;'+
+    'letter-spacing:.05em;text-decoration:none;border-bottom:1px solid #8a6e30;'+
+    'white-space:nowrap;font-style:normal;" '+
+    'title="Larkin Charts">'+
+    '&#128197; See Charts by Larkin here</a>';
+  // Split on HTML tags — only replace in TEXT nodes, never inside attributes
+  const parts=html.split(/(<[^>]*>)/g);
+  for(let i=0;i<parts.length;i+=2){
+    if(parts[i].includes('Clarence Larkin')){
+      parts[i]=parts[i].replace(/Clarence Larkin/g,'Clarence Larkin'+link);
+    }
+  }
+  return parts.join('');
+}
+
 function mdToHtml(text){
   // Remove image and citation blocks from main text
   text=text.replace(/===IMAGES===([\s\S]*?)===END IMAGES===/i,'');
@@ -913,7 +936,7 @@ function mdToHtml(text){
   });
 
   if(!finalHtml.trim()) finalHtml=renderInnerMd(text).replace('<p>','<p class="drop-cap">');
-  return finalHtml+citationHtml;
+  return injectLarkinLinks(finalHtml+citationHtml);
 }
 
 function renderInnerMd(text){
@@ -1087,7 +1110,7 @@ async function exportToPDF(aid, questionTitle, bw){
   wrapper.appendChild(clone);
   const footer=document.createElement('div');
   footer.style.cssText='margin-top:24px;border-top:1px solid '+(bw?'#000':'#c9a84c')+';padding-top:10px;font-size:10px;color:'+(bw?'#000':'#8a6e30')+';font-family:serif;text-align:center;letter-spacing:.08em;';
-  footer.textContent='Ask Doctrine \u2014 Classical Theological Reference \u2014 Generated '+new Date().toLocaleDateString();
+  footer.textContent='Ask Doctrine — Copyright © 2026 — All Rights Reserved — Generated '+new Date().toLocaleDateString();
   wrapper.appendChild(footer);
   document.body.appendChild(wrapper);
 
