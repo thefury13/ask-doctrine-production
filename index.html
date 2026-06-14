@@ -1,72 +1,1334 @@
-<!doctype html>
+<!--
+  Ask Doctrine — Classical Theological Reference
+  Copyright © 2026 Ask Doctrine. All Rights Reserved.
+  US Copyright Registration Pending.
+-->
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Phoenix editor</title>
-        <link rel="stylesheet" href="styles.css" />
-        <script src="script.js"></script>
-    </head>
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Ask Doctrine — Classical Theological Reference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root{
+  --bg:#0e0906;--surface:#1a1008;--panel:#231509;--border:#4a2e18;
+  --gold:#c9a84c;--gold-dim:#8a6e30;--gold-glow:#e8c96a;
+  --oxblood:#7a1f2e;--parchment:#e8dfc8;--parchment-dim:#b5aa94;
+  --ink:#f0e8d5;--green:#4a8c4a;--blue:#4a6a9c;--img-bg:#0a0a18;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Garamond',Georgia,serif;font-size:17px;line-height:1.75;overflow:hidden;}
 
-    <body onload="onPageLoaded()">
-        <img id="starsLeft" alt="stars" src="images/stars-left.svg" />
-        <div id="mainDiv">
-            <img id="logo" alt="logo" src="images/phoenix-logo.svg" />
-            <div id="MainText">
-                <h1>Phoenix Code</h1>
-                <span>Click here to locate this &lt;span&gt; in the HTML file<br /></span><br />
-            </div>
-            <div class="video-container">
-                <a
-                    href="https://www.youtube.com/@phoenixcodeeditor3764"
-                    target="_blank"
-                    title="Phoenix YouTube Channel"
-                    class="phcode-no-lp-edit">
-                    <img
-                        src="images/youtube_video.png"
-                        alt="Phoenix Code on YouTube"
-                        title="Phoenix Code on YouTube"
-                        style="max-width: 320px" />
-                </a>
-                <img src="images/play.svg" class="play-button phcode-no-lp-edit" style="width: 64px;" alt="play">
-            </div>
-        </div>
-        <img id="cloudLeftTop" alt="cloud" src="images/vector-top-left.png" />
-        <img id="cloudBottomRight" alt="cloud" src="images/vector-bottom-right.png" />
-        <img id="starsRight" alt="stars" src="images/stars-right.svg" />
-        <img
-            class="clouds"
-            alt="cloud"
-            style="z-index: 3; transform: translate(0px, -1.55909px)"
-            src="images/cloud1.svg" />
-        <img
-            class="clouds"
-            alt="cloud"
-            style="z-index: 6; transform: translate(0px, -2.33863px)"
-            src="images/cloud2.svg" />
-        <img
-            class="clouds"
-            alt="cloud"
-            style="z-index: 5; transform: translate(0px, -3.89772px)"
-            src="images/cloud3.svg" />
-        <img
-            class="clouds"
-            alt="cloud"
-            style="z-index: 6; transform: translate(0px, -3.89772px)"
-            src="images/cloud4.svg" />
-        <div class="night">
-            <div class="shooting_star">
-                <div class="shooting_star" />
-            </div>
-        </div>
-        <div class="night">
-            <div class="shooting_star">
-                <div class="shooting_star" />
-            </div>
-        </div>
-        <div class="night">
-            <div class="shooting_star">
-                <div class="shooting_star" />
-            </div>
-        </div>
-    </body>
+/* HEADER */
+#header{background:linear-gradient(180deg,#000 0%,#1a0c06 60%,var(--bg) 100%);border-bottom:1px solid var(--border);padding:16px 16px 12px;text-align:center;position:relative;flex-shrink:0;}
+#header::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold-dim) 20%,var(--gold) 50%,var(--gold-dim) 80%,transparent);}
+.h-orn{font-family:'Cinzel',serif;color:var(--gold-dim);font-size:10px;letter-spacing:.3em;text-transform:uppercase;margin-bottom:4px;display:block;}
+#header h1{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,5vw,34px);font-weight:700;color:var(--gold);letter-spacing:.06em;text-shadow:0 0 40px rgba(201,168,76,.35),0 2px 8px rgba(0,0,0,.9);line-height:1.1;}
+.h-sub{font-family:'EB Garamond',serif;font-style:italic;color:var(--parchment-dim);font-size:13px;letter-spacing:.1em;margin-top:4px;}
+.h-rule{display:flex;align-items:center;gap:10px;margin:8px auto 0;max-width:400px;}
+.h-rule::before{background:linear-gradient(90deg,transparent,var(--gold-dim));content:'';flex:1;height:1px;}
+.h-rule::after{background:linear-gradient(90deg,var(--gold-dim),transparent);content:'';flex:1;height:1px;}
+
+/* LAYOUT */
+#app{display:flex;flex-direction:column;height:100vh;}
+#scroll-area{flex:1;overflow-y:auto;padding:28px 20px;scroll-behavior:smooth;}
+#scroll-area::-webkit-scrollbar{width:6px;}
+#scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+#messages{max-width:880px;margin:0 auto;display:flex;flex-direction:column;gap:32px;}
+
+/* WELCOME */
+#welcome{text-align:center;padding:40px 20px;max-width:720px;margin:0 auto;}
+.welcome-seal{font-size:52px;margin-bottom:18px;filter:drop-shadow(0 0 20px rgba(201,168,76,.3));}
+#welcome h2{font-family:'Cinzel',serif;font-size:20px;font-weight:600;color:var(--gold);letter-spacing:.08em;margin-bottom:14px;}
+#welcome p{color:var(--parchment-dim);font-style:italic;font-size:15.5px;line-height:1.8;margin-bottom:24px;}
+.welcome-authors{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:28px;}
+.author-tag{background:var(--surface);border:1px solid var(--border);color:var(--gold-dim);font-family:'Cinzel',serif;font-size:10.5px;letter-spacing:.08em;padding:4px 10px;border-radius:2px;}
+.sample-questions{display:flex;flex-direction:column;gap:8px;}
+.sample-q{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--gold-dim);color:var(--parchment);font-style:italic;font-size:14.5px;padding:10px 14px;cursor:pointer;text-align:left;transition:border-left-color .2s,background .2s;border-radius:0 2px 2px 0;}
+.sample-q:hover{background:#231509;border-left-color:var(--gold);color:var(--ink);}
+
+/* MESSAGES */
+.msg-user{display:flex;justify-content:flex-end;}
+.msg-user-bubble{background:var(--oxblood);border:1px solid #9a2f3e;color:var(--parchment);padding:13px 18px;border-radius:3px 0 3px 3px;max-width:72%;font-style:italic;font-size:16px;box-shadow:0 2px 12px rgba(0,0,0,.5);}
+.msg-answer{display:flex;flex-direction:column;gap:0;}
+.answer-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.answer-seal{width:32px;height:32px;background:var(--surface);border:1px solid var(--gold-dim);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.answer-label{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.14em;color:var(--gold-dim);text-transform:uppercase;}
+
+/* ANSWER BODY */
+.answer-body{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--gold-dim);padding:26px 28px 22px;border-radius:0 3px 3px 3px;box-shadow:0 4px 24px rgba(0,0,0,.5);font-size:16.5px;line-height:1.85;color:var(--parchment);}
+.answer-body .drop-cap::first-letter{font-family:'Cinzel Decorative',serif;font-size:4.2em;font-weight:700;color:var(--gold);float:left;line-height:.75;margin:6px 10px 0 0;text-shadow:0 0 20px rgba(201,168,76,.4);}
+.answer-body h3{font-family:'Cinzel',serif;font-size:13px;font-weight:600;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin:22px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border);}
+.answer-body p{margin-bottom:14px;}
+.answer-body blockquote{border-left:3px solid var(--gold-dim);margin:16px 0;padding:10px 18px;background:var(--panel);font-style:italic;color:var(--ink);font-size:15.5px;}
+.answer-body strong{color:var(--gold-glow);font-weight:600;}
+.answer-body em{color:var(--parchment);font-style:italic;}
+.answer-body ul{margin:10px 0 14px 20px;list-style:disc;}
+.answer-body ol{margin:10px 0 14px 20px;list-style:decimal;}
+.answer-body li{margin-bottom:5px;color:var(--parchment);}
+.answer-body hr{border:none;border-top:1px solid var(--border);margin:18px 0;}
+
+/* REAL WORLD */
+.real-world-block{background:#0f1f0f;border:1px solid #2a4a2a;border-left:4px solid var(--green);padding:18px 20px;margin:16px 0;border-radius:0 3px 3px 0;}
+.real-world-block h3{color:var(--green) !important;border-bottom-color:#2a4a2a !important;}
+.real-world-block p{color:#b8d4b8;}
+
+/* SERMON */
+.sermon-block{background:#0a0f1e;border:1px solid #1a2a4a;border-left:4px solid var(--blue);padding:18px 20px;margin:16px 0;border-radius:0 3px 3px 0;}
+.sermon-block h3{color:#7a9fd4 !important;border-bottom-color:#1a2a4a !important;}
+.sermon-block p{color:#b0c4de;}
+.sermon-block ol,.sermon-block ul{margin:10px 0 14px 20px;}
+.sermon-block li{color:#b0c4de;margin-bottom:6px;}
+
+/* CITATIONS */
+.citation-ribbon{margin-top:20px;border-top:1px solid var(--border);padding-top:14px;}
+.citation-ribbon-label{font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.2em;color:var(--gold-dim);text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.citation-ribbon-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.citation-list{list-style:none;display:flex;flex-direction:column;gap:4px;}
+.citation-list li{font-size:12px;color:var(--parchment-dim);font-style:italic;padding-left:14px;position:relative;}
+.citation-list li::before{content:'†';position:absolute;left:0;color:var(--gold-dim);}
+
+/* VISUAL CONTENT */
+.visual-content-block{background:var(--img-bg);border:1px solid #2a2a3a;border-top:2px solid var(--gold-dim);padding:20px 22px;margin-top:10px;border-radius:0 0 3px 3px;}
+.visual-content-title{font-family:'Cinzel',serif;font-size:11.5px;font-weight:600;color:var(--gold);letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid #2a2a3a;display:flex;align-items:center;gap:8px;}
+.img-loading{color:var(--parchment-dim);font-style:italic;font-size:14px;padding:14px 0;display:flex;align-items:center;gap:10px;}
+.map-wrap{height:260px;border:1px solid #2a2a3a;border-radius:3px;margin-bottom:14px;overflow:hidden;}
+.map-label{font-family:'Cinzel',serif;font-size:10px;color:var(--gold-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;}
+.img-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-bottom:14px;}
+.img-card{background:var(--surface);border:1px solid var(--border);border-radius:3px;overflow:hidden;cursor:pointer;transition:border-color .2s;}
+.img-card:hover{border-color:var(--gold-dim);}
+.img-card img{width:100%;height:150px;object-fit:cover;display:block;}
+.img-card-cap{padding:7px 10px;font-size:11.5px;color:var(--parchment-dim);font-style:italic;line-height:1.4;}
+.img-req-bar{display:flex;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid #2a2a3a;}
+.img-req-input{flex:1;background:var(--panel);border:1px solid var(--border);border-radius:3px;color:var(--ink);font-family:'EB Garamond',serif;font-size:15px;padding:9px 13px;outline:none;transition:border-color .2s;}
+.img-req-input:focus{border-color:var(--gold-dim);}
+.img-req-input::placeholder{color:var(--parchment-dim);font-style:italic;opacity:.6;}
+.img-req-btn{background:var(--surface);border:1px solid var(--border);color:var(--gold-dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;border-radius:3px;cursor:pointer;white-space:nowrap;transition:border-color .2s,color .2s;}
+.img-req-btn:hover{border-color:var(--gold-dim);color:var(--gold);}
+.no-images{color:var(--parchment-dim);font-style:italic;font-size:14px;padding:8px 0;}
+
+/* LIGHTBOX */
+#lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.93);z-index:1000;align-items:center;justify-content:center;padding:20px;}
+#lightbox.open{display:flex;}
+#lightbox img{max-width:92vw;max-height:88vh;object-fit:contain;border:1px solid var(--border);border-radius:3px;}
+#lightbox-close{position:absolute;top:16px;right:20px;color:var(--gold);font-size:28px;cursor:pointer;background:none;border:none;line-height:1;}
+#lightbox-cap{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:var(--parchment-dim);font-style:italic;font-size:13px;text-align:center;max-width:600px;}
+
+/* EXPORT */
+.export-bar{display:flex;justify-content:flex-end;gap:8px;margin-top:8px;flex-wrap:wrap;}
+.export-btn{display:flex;align-items:center;gap:7px;background:none;border:1px solid var(--gold-dim);color:var(--gold-dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:7px 14px;border-radius:3px;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.export-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,168,76,.06);}
+.export-btn.bw{border-color:#666;color:#aaa;}
+.export-btn.exporting{opacity:.5;cursor:not-allowed;}
+.pdf-locked{opacity:.4 !important;}
+
+/* MIC */
+#mic-btn{background:none;border:1px solid var(--border);color:var(--parchment-dim);font-size:18px;width:50px;height:50px;border-radius:3px;cursor:pointer;flex-shrink:0;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+#mic-btn:hover{border-color:var(--gold-dim);color:var(--gold);}
+#mic-btn.listening{border-color:#e05050;color:#e05050;animation:micPulse 1s ease-in-out infinite;}
+#mic-btn.unsupported{opacity:.3;cursor:not-allowed;}
+@keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(224,80,80,.4);}50%{box-shadow:0 0 0 6px rgba(224,80,80,0);}}
+
+/* INPUT */
+#input-bar{background:linear-gradient(0deg,#000 0%,var(--surface) 100%);border-top:1px solid var(--border);padding:16px 20px;flex-shrink:0;}
+#input-bar::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim) 30%,var(--gold-dim) 70%,transparent);margin-bottom:14px;opacity:.5;}
+#input-form{display:flex;gap:10px;max-width:880px;margin:0 auto;align-items:flex-end;}
+#input-wrap{flex:1;}
+#question-input{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:3px;color:var(--ink);font-family:'EB Garamond',serif;font-size:16px;padding:13px 16px;resize:none;min-height:50px;max-height:140px;outline:none;transition:border-color .2s,box-shadow .2s;line-height:1.5;}
+#question-input::placeholder{color:var(--parchment-dim);font-style:italic;opacity:.6;}
+#question-input:focus{border-color:var(--gold-dim);box-shadow:0 0 0 2px rgba(201,168,76,.12);}
+#send-btn{background:linear-gradient(135deg,#8a6e30 0%,var(--gold) 100%);border:1px solid var(--gold);color:#0e0906;font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:0 20px;height:50px;border-radius:3px;cursor:pointer;transition:opacity .2s,transform .15s;flex-shrink:0;}
+#send-btn:hover:not(:disabled){opacity:.88;transform:translateY(-1px);}
+#send-btn:disabled{opacity:.45;cursor:not-allowed;}
+.input-hint{text-align:center;font-size:11px;color:var(--gold-dim);font-style:italic;margin-top:8px;opacity:.65;letter-spacing:.04em;}
+.msg-error .answer-body{border-top-color:var(--oxblood);color:#e08080;}
+@keyframes fadeSlideIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.msg-answer,.msg-user{animation:fadeSlideIn .35s ease-out forwards;}
+
+/* ═══════════════════════════════════════════════════════════
+   TERMS OF SERVICE OVERLAY
+   The overlay itself scrolls so the button is always reachable
+   ═══════════════════════════════════════════════════════════ */
+#tos-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.96);
+  z-index:2000;
+  display:block;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:24px 16px 48px;
+  backdrop-filter:blur(6px);
+}
+#tos-overlay.hidden{display:none !important;}
+#tos-modal{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-top:3px solid var(--gold);
+  border-radius:4px;
+  padding:22px 20px 24px;
+  max-width:520px;
+  width:100%;
+  margin:0 auto;
+  box-shadow:0 8px 48px rgba(0,0,0,.9);
+}
+#tos-modal h2{font-family:'Cinzel Decorative',serif;font-size:clamp(15px,4vw,19px);color:var(--gold);text-align:center;margin-bottom:10px;}
+.tos-body{
+  font-size:13px;color:var(--parchment-dim);line-height:1.72;
+  height:200px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  border:1px solid var(--border);
+  padding:12px;border-radius:3px;
+  margin-bottom:14px;background:var(--panel);
+}
+.tos-body h4{font-family:'Cinzel',serif;font-size:10px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin:10px 0 4px;}
+.tos-body p{margin-bottom:8px;}
+.tos-accept-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;}
+.tos-accept-row input{margin-top:3px;accent-color:var(--gold);width:18px;height:18px;flex-shrink:0;cursor:pointer;}
+.tos-accept-row label{font-size:13px;color:var(--parchment);line-height:1.6;cursor:pointer;}
+#tos-accept-btn{
+  width:100%;
+  background:linear-gradient(135deg,var(--gold-dim),var(--gold));
+  border:none;color:#0e0906;
+  font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:13px;border-radius:3px;cursor:pointer;
+  opacity:.4;transition:opacity .2s;
+  margin-bottom:12px;
+}
+#tos-accept-btn.ready{opacity:1;}
+.tos-copyright{text-align:center;font-size:10px;color:var(--gold-dim);letter-spacing:.06em;}
+
+/* ═══════════════════════════════════════════════════════════
+   TIER SELECTOR OVERLAY
+   ═══════════════════════════════════════════════════════════ */
+#tier-overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.94);
+  z-index:1999;
+  display:none;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:24px 16px 48px;
+  backdrop-filter:blur(6px);
+}
+#tier-modal{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:4px;padding:22px 18px;max-width:680px;width:100%;margin:0 auto;box-shadow:0 8px 48px rgba(0,0,0,.8);}
+#tier-modal h2{font-family:'Cinzel Decorative',serif;font-size:clamp(15px,3vw,20px);color:var(--gold);text-align:center;margin-bottom:6px;letter-spacing:.06em;}
+.tier-subtitle{font-style:italic;color:var(--parchment-dim);font-size:13px;text-align:center;margin-bottom:16px;}
+.tier-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-bottom:16px;}
+.tier-card{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:15px 11px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.tier-card:hover{border-color:var(--gold-dim);transform:translateY(-2px);}
+.tier-card.popular{border:2px solid var(--gold);}
+.tier-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0e0906;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.1em;padding:2px 9px;border-radius:10px;white-space:nowrap;}
+.tier-name{font-family:'Cinzel',serif;font-size:11.5px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px;}
+.tier-price{font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--ink);line-height:1;}
+.tier-price span{font-size:11px;color:var(--parchment-dim);font-family:'EB Garamond',serif;}
+.tier-queries{font-family:'Cinzel',serif;font-size:9px;color:var(--gold-dim);letter-spacing:.1em;text-transform:uppercase;margin:7px 0;}
+.tier-features{list-style:none;font-size:12px;color:var(--parchment-dim);text-align:left;margin:8px 0 10px;}
+.tier-features li{padding:2px 0;display:flex;align-items:flex-start;gap:5px;}
+.tier-features li::before{content:'✓';color:var(--green);flex-shrink:0;font-size:10.5px;}
+.tier-features li.no::before{content:'✗';color:#c0392b;}
+.tier-features li.no{color:#777;}
+.tier-select-btn{width:100%;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;color:#0e0906;font-family:'Cinzel',serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px;border-radius:3px;cursor:pointer;transition:opacity .2s;}
+.tier-select-btn:hover{opacity:.85;}
+.tier-note{text-align:center;font-size:11px;color:var(--parchment-dim);font-style:italic;border-top:1px solid var(--border);padding-top:11px;line-height:1.7;}
+.tier-note a{color:var(--gold-dim);}
+
+/* QUERY BAR */
+#query-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.08em;color:var(--gold-dim);text-transform:uppercase;}
+#query-bar.hidden{display:none;}
+.qbar-left{display:flex;align-items:center;gap:9px;}
+.qbar-tier{color:var(--gold);font-weight:600;}
+.qbar-progress{width:80px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.qbar-fill{height:100%;background:var(--gold);border-radius:3px;transition:width .4s;}
+.qbar-fill.warn{background:#e0a030;}
+.qbar-fill.danger{background:#c0392b;}
+.qbar-count{color:var(--parchment-dim);font-size:9px;}
+.qbar-upgrade{color:var(--gold);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+
+/* UPGRADE GATE */
+.upgrade-gate{background:var(--panel);border:1px solid var(--gold-dim);border-radius:4px;padding:20px;text-align:center;margin:20px 0;}
+.upgrade-gate h3{font-family:'Cinzel',serif;font-size:14px;color:var(--gold);margin-bottom:8px;}
+.upgrade-gate p{font-size:14px;color:var(--parchment-dim);font-style:italic;margin-bottom:14px;}
+.upgrade-gate-btn{background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;color:#0e0906;font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:10px 22px;border-radius:3px;cursor:pointer;}
+
+/* KEY OVERLAY */
+#key-overlay{display:none !important;}  /* hidden in production — owner provides key via Worker */
+#key-modal{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--gold-dim);border-radius:4px;padding:32px 28px;max-width:440px;width:100%;box-shadow:0 8px 48px rgba(0,0,0,.8);text-align:center;}
+.modal-cross{font-size:38px;color:var(--gold-dim);margin-bottom:12px;display:block;}
+#key-modal h2{font-family:'Cinzel',serif;font-size:18px;color:var(--gold);letter-spacing:.08em;margin-bottom:10px;}
+#key-modal p{color:var(--parchment-dim);font-size:14px;font-style:italic;line-height:1.7;margin-bottom:20px;}
+#key-modal a{color:var(--gold-dim);}
+#key-input{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:3px;color:var(--ink);font-family:'EB Garamond',serif;font-size:15px;padding:12px 14px;outline:none;margin-bottom:14px;transition:border-color .2s;}
+#key-input:focus{border-color:var(--gold-dim);}
+#key-input::placeholder{color:var(--parchment-dim);opacity:.5;font-style:italic;}
+#key-save-btn{width:100%;background:linear-gradient(135deg,#8a6e30 0%,var(--gold) 100%);border:1px solid var(--gold);color:#0e0906;font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:13px 20px;border-radius:3px;cursor:pointer;margin-bottom:12px;}
+.key-note{font-size:11.5px;color:var(--parchment-dim);opacity:.7;font-style:italic;}
+#key-settings-btn{display:none !important;}
+
+@media(max-width:620px){
+  #header h1{font-size:22px;}
+  .answer-body{padding:18px 16px;}
+  .msg-user-bubble{max-width:90%;}
+  #input-bar{padding:12px 12px;}
+  .img-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));}
+  #key-settings-btn{display:none;}
+  .tier-cards{grid-template-columns:1fr;}
+}
+
+/* ── LOADING ANIMATIONS ── */
+.msg-loading .answer-body{display:flex;align-items:center;gap:16px;padding:22px 28px;font-style:italic;color:var(--parchment-dim);font-size:15px;}
+.quill-anim{font-size:22px;animation:quillBob 1.2s ease-in-out infinite;transform-origin:bottom;display:inline-block;}
+@keyframes quillBob{0%,100%{transform:rotate(-8deg) translateY(0);}50%{transform:rotate(8deg) translateY(-5px);}}
+.dots span{display:inline-block;animation:dotFade 1.4s ease-in-out infinite;color:var(--gold-dim);}
+.dots span:nth-child(2){animation-delay:.2s;}
+.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes dotFade{0%,80%,100%{opacity:.2;}40%{opacity:1;}}
+</style>
+</head>
+<body>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button id="lightbox-close" onclick="closeLightbox()">&#10005;</button>
+  <img id="lightbox-img" src="" alt=""/>
+  <div id="lightbox-cap"></div>
+</div>
+
+<!-- API KEY OVERLAY -->
+<div id="key-overlay">
+  <div id="key-modal">
+    <span class="modal-cross">&#10013;</span>
+    <h2>Enter Your API Key</h2>
+    <p>Ask Doctrine uses the Anthropic API to search the classical commentators. Your key is saved only on <strong>this device</strong> and never stored in the app code.<br><br>
+    Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></p>
+    <input type="password" id="key-input" placeholder="sk-ant-api03-&#x2026;" autocomplete="off"/>
+    <button id="key-save-btn" onclick="saveApiKey()">Begin Study &#10022;</button>
+    <div class="key-note">Your key is stored on this device only. It is never visible in the app source code.</div>
+  </div>
+</div>
+
+<!-- TERMS OF SERVICE OVERLAY -->
+<div id="tos-overlay">
+  <div id="tos-modal">
+    <h2>Ask Doctrine</h2>
+    <div class="tos-body">
+      <h4>Terms of Service &amp; License Agreement</h4>
+      <p>By using Ask Doctrine you agree to the following terms. Please read carefully before proceeding.</p>
+      <h4>1. Intellectual Property</h4>
+      <p>Ask Doctrine, including its interface, prompt architecture, theological commentary curation, and all associated software, is the exclusive intellectual property of Ask Doctrine. Copyright &copy; 2026. All rights reserved. US Copyright registration pending.</p>
+      <h4>2. License Grant</h4>
+      <p>Your subscription grants you a personal, non-transferable, non-exclusive license to use this application for private study, ministry preparation, and educational purposes. This license does not permit redistribution, resale, sublicensing, or commercial exploitation of any portion of this software.</p>
+      <h4>3. Prohibited Uses</h4>
+      <p>You may not: copy, reverse-engineer, decompile, or reproduce this application; distribute access to others outside your subscription; use this software to train competing AI systems; or remove any copyright notices or attribution.</p>
+      <h4>4. Subscription &amp; Billing</h4>
+      <p>Subscriptions are billed monthly at $4.99 (Basic, 40 queries), $12.99 (Pro, 100 queries), or $29.99 (Ministry, 300 queries). Query limits reset every 30 days from your signup date. Unused queries do not roll over. No refunds for partial months.</p>
+      <h4>5. API Usage</h4>
+      <p>This application utilizes the Anthropic Claude API. By using Ask Doctrine you also agree to Anthropic&rsquo;s Terms of Service at anthropic.com/legal.</p>
+      <h4>6. Disclaimer</h4>
+      <p>Ask Doctrine provides theological reference information for study purposes only. It does not constitute pastoral counseling, legal advice, or authoritative doctrinal teaching. Always verify content against Scripture and consult qualified ministers for pastoral matters.</p>
+      <h4>7. Governing Law</h4>
+      <p>These terms are governed by the laws of the United States. Disputes shall be resolved by binding arbitration.</p>
+    </div>
+    <div class="tos-accept-row">
+      <input type="checkbox" id="tos-check" onchange="document.getElementById('tos-accept-btn').classList.toggle('ready',this.checked)"/>
+      <label for="tos-check">I have read and agree to the Terms of Service and License Agreement. I understand that Ask Doctrine is protected intellectual property and agree not to copy or redistribute this software.</label>
+    </div>
+    <button id="tos-accept-btn" onclick="acceptTos()">I Agree &mdash; Continue to Ask Doctrine &#10022;</button>
+    <div class="tos-copyright">Ask Doctrine &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved &nbsp;&bull;&nbsp; Copyright Registration Pending</div>
+  </div>
+</div>
+
+<!-- TIER SELECT OVERLAY -->
+<div id="tier-overlay">
+  <div id="tier-modal">
+    <h2>Ask Doctrine</h2>
+    <div class="tier-subtitle">"Study to shew thyself approved unto God" &mdash; 2 Timothy 2:15</div>
+    <div class="tier-cards">
+      <div class="tier-card" onclick="selectTier('basic')">
+        <div class="tier-name">Basic</div>
+        <div class="tier-price">$4.99<span>/mo</span></div>
+        <div class="tier-queries">40 queries / month</div>
+        <ul class="tier-features">
+          <li>Full doctrine answers</li>
+          <li>Hebrew &amp; Greek studies</li>
+          <li>Commentary insights</li>
+          <li>Sermonic outlines</li>
+          <li>Visual Content &amp; Maps</li>
+          <li class="no">PDF Export</li>
+        </ul>
+        <button class="tier-select-btn">Select Basic</button>
+      </div>
+      <div class="tier-card popular" onclick="selectTier('pro')">
+        <div class="tier-badge">MOST POPULAR</div>
+        <div class="tier-name">Pro</div>
+        <div class="tier-price">$12.99<span>/mo</span></div>
+        <div class="tier-queries">100 queries / month</div>
+        <ul class="tier-features">
+          <li>Everything in Basic</li>
+          <li>Color PDF Export</li>
+          <li>B&amp;W PDF Export</li>
+          <li>Save &amp; Archive results</li>
+        </ul>
+        <button class="tier-select-btn">Select Pro</button>
+      </div>
+      <div class="tier-card" onclick="selectTier('ministry')">
+        <div class="tier-name">Ministry</div>
+        <div class="tier-price">$29.99<span>/mo</span></div>
+        <div class="tier-queries">300 queries / month</div>
+        <ul class="tier-features">
+          <li>Everything in Pro</li>
+          <li>300 queries / month</li>
+          <li>Sermon research library</li>
+          <li>Church &amp; seminary use</li>
+        </ul>
+        <button class="tier-select-btn">Select Ministry</button>
+      </div>
+    </div>
+    <div class="tier-note">
+      Subscribe at your Gumroad store to activate your plan.<br>
+      No API key needed &mdash; everything is handled for you.<br>
+      Queries reset every 30 days from your signup date.<br><br>
+      <span style="font-family:'Cinzel',serif;font-size:10px;color:var(--gold-dim);letter-spacing:.06em;">
+        Ask Doctrine &mdash; Copyright &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved
+      </span>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+<div id="header" style="position:relative;">
+  <span class="h-orn">&#10022; Established upon the Prophets &amp; Apostles &#10022;</span>
+  <h1>Ask Doctrine</h1>
+  <div class="h-sub">Classical Theological Reference &middot; KJV &middot; 1600&ndash;1940</div>
+  <div class="h-rule"><span style="color:var(--gold-dim)">&#10013;</span></div>
+</div>
+
+<div id="query-bar" class="hidden">
+  <div class="qbar-left">
+    <span class="qbar-tier" id="qbar-tier-name">Basic</span>
+    <div class="qbar-progress"><div class="qbar-fill" id="qbar-fill" style="width:0%"></div></div>
+    <span class="qbar-count" id="qbar-count">0 / 40 queries</span>
+  </div>
+  <span class="qbar-upgrade" onclick="showTierOverlay()">Upgrade &#8593;</span>
+</div>
+
+<div id="scroll-area">
+  <div id="messages">
+    <div id="welcome">
+      <div class="welcome-seal">&#10013;</div>
+      <h2>Sound Doctrine from the Great Cloud of Witnesses</h2>
+      <p>"For the time will come when they will not endure sound doctrine&#x2026;" &#8212; <em>2 Timothy 4:3 (KJV)</em></p>
+      <p>Pose any question of Christian doctrine and receive a full answer drawn from the classical commentators &#8212; with Hebrew &amp; Greek word studies, commentary insights, a 21st century real-world application, a sermonic outline, relevant images and maps, and full citations. Export any answer as a styled PDF.</p>
+      <div class="welcome-authors">
+        <span class="author-tag">Jamieson&#xB7;Fausset&#xB7;Brown</span><span class="author-tag">A.W. Pink</span>
+        <span class="author-tag">Clarence Larkin</span><span class="author-tag">Alexander Maclaren</span>
+        <span class="author-tag">Matthew Poole</span><span class="author-tag">W.W. Fereday</span>
+        <span class="author-tag">J.C. Philpot</span><span class="author-tag">C.H. Spurgeon</span>
+        <span class="author-tag">Dake</span><span class="author-tag">J.C. Ellicott</span>
+        <span class="author-tag">J. Dwight Pentecost</span><span class="author-tag">Lange&#x2019;s Commentary</span>
+        <span class="author-tag">Josephus</span><span class="author-tag">Strong&#x2019;s Concordance</span>
+      </div>
+      <div class="sample-questions">
+        <button class="sample-q" onclick="useSample(this)">What does Scripture teach concerning the eternal Sonship of Jesus Christ?</button>
+        <button class="sample-q" onclick="useSample(this)">Explain the doctrine of the atonement &#8212; how does Christ&#x2019;s death accomplish remission of sins?</button>
+        <button class="sample-q" onclick="useSample(this)">What is the biblical meaning of propitiation? Provide the Greek definition and theological commentary.</button>
+        <button class="sample-q" onclick="useSample(this)">How does the Triune Godhead reveal itself in the baptism of Christ?</button>
+        <button class="sample-q" onclick="useSample(this)">What does Josephus record about John the Baptist, and how does it confirm the Gospel accounts?</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="input-bar">
+  <div id="input-form">
+    <button id="mic-btn" onclick="toggleMic()" title="Speak your question">&#127908;</button>
+    <div id="input-wrap">
+      <textarea id="question-input" placeholder="Ask a question of doctrine, Scripture, or theology&#x2026;" rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    </div>
+    <button id="send-btn" onclick="sendQuestion()">Inquire &#10022;</button>
+  </div>
+  <div style="text-align:center;font-size:10px;color:var(--gold-dim);opacity:.5;padding:2px 0;letter-spacing:.08em;font-family:'Cinzel',serif;">Ask Doctrine &mdash; Copyright &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved &nbsp;&bull;&nbsp; <span style="cursor:pointer;text-decoration:underline;" onclick="showTierOverlay()">Manage Plan</span></div>
+<div class="input-hint" id="input-hint">"Study to shew thyself approved unto God, a workman that needeth not to be ashamed, rightly dividing the word of truth." &#8212; 2 Tim 2:15</div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+//  TERMS OF SERVICE
+// ═══════════════════════════════════════════
+function checkTos(){ return localStorage.getItem('ad_tos')==='1'; }
+function acceptTos(){
+  if(!document.getElementById('tos-check').checked) return;
+  localStorage.setItem('ad_tos','1');
+  document.getElementById('tos-overlay').classList.add('hidden');
+  if(!getTier()) showTierOverlay();
+  else updateQueryBar();
+}
+function hasPDF(){ const t=TIERS[getTier()]; return !!(t&&t.pdf); }
+
+// ── COMPLETE TIER SYSTEM ──────────────────────────────────────
+const TIERS={
+  basic:   {name:'Basic',   price:'$4.99/mo', limit:40,  pdf:false},
+  pro:     {name:'Pro',     price:'$12.99/mo',limit:100, pdf:true},
+  ministry:{name:'Ministry',price:'$29.99/mo',limit:300,pdf:true}
+};
+function getTier(){ return localStorage.getItem('ad_tier')||''; }
+function getCount(){ return parseInt(localStorage.getItem('ad_count')||'0',10); }
+
+function resetIfNewPeriod(){
+  const signup=localStorage.getItem('ad_signup');
+  if(!signup) return;
+  const daysSince=Math.floor((new Date()-new Date(signup))/86400000);
+  const period=Math.floor(daysSince/30);
+  const lastPeriod=parseInt(localStorage.getItem('ad_period')||'0',10);
+  if(period>lastPeriod){
+    localStorage.setItem('ad_count','0');
+    localStorage.setItem('ad_period',String(period));
+  }
+}
+function getDaysUntilReset(){
+  const signup=localStorage.getItem('ad_signup');
+  if(!signup) return 30;
+  const daysSince=Math.floor((new Date()-new Date(signup))/86400000);
+  return 30-(daysSince%30);
+}
+function canQuery(){
+  const t=TIERS[getTier()];
+  if(!t) return false;
+  if(t.limit===null) return true;
+  return getCount()<t.limit;
+}
+function incrementCount(){
+  resetIfNewPeriod();
+  localStorage.setItem('ad_count',String(getCount()+1));
+  updateQueryBar();
+}
+function showTierOverlay(){
+  const el=document.getElementById('tier-overlay');
+  if(el){ el.style.display='block'; }
+}
+function hideTierOverlay(){
+  const el=document.getElementById('tier-overlay');
+  if(el){ el.style.display='none'; }
+}
+function selectTier(tier){
+  const prev=getTier();
+  localStorage.setItem('ad_tier',tier);
+  if(prev!==tier) localStorage.setItem('ad_count','0');
+  if(!localStorage.getItem('ad_signup')){
+    localStorage.setItem('ad_signup',new Date().toISOString());
+    localStorage.setItem('ad_period','0');
+  }
+  hideTierOverlay();
+  updateQueryBar();
+}
+function updateQueryBar(){
+  const tier=getTier();
+  if(!tier) return;
+  const t=TIERS[tier];
+  resetIfNewPeriod();
+  const count=getCount();
+  const bar=document.getElementById('query-bar');
+  const fill=document.getElementById('qbar-fill');
+  const countEl=document.getElementById('qbar-count');
+  const nameEl=document.getElementById('qbar-tier-name');
+  if(!bar) return;
+  bar.classList.remove('hidden');
+  if(nameEl) nameEl.textContent=t.name;
+  if(t.limit===null){
+    if(countEl) countEl.textContent=count+' queries (Unlimited)';
+    if(fill){ fill.style.width='20%'; fill.className='qbar-fill'; }
+  } else {
+    const pct=Math.min(100,Math.round((count/t.limit)*100));
+    const days=getDaysUntilReset();
+    if(countEl) countEl.textContent=count+' / '+t.limit+' \u2022 resets in '+days+'d';
+    if(fill){ fill.style.width=pct+'%'; fill.className='qbar-fill'+(pct>=90?' danger':pct>=70?' warn':''); }
+  }
+  document.querySelectorAll('.export-btn').forEach(btn=>{
+    if(!hasPDF()){
+      btn.classList.add('pdf-locked');
+      btn.title='PDF Export \u2014 Pro & Ministry only';
+      btn.onclick=(e)=>{ e.stopPropagation(); showTierOverlay(); };
+    } else {
+      btn.classList.remove('pdf-locked');
+    }
+  });
+}
+
+//  API KEY
+// ═══════════════════════════════════════════════════════
+function getApiKey(){ return localStorage.getItem('ask_doctrine_key')||''; }
+function saveApiKey(){
+  const v=document.getElementById('key-input').value.trim();
+  if(!v.startsWith('sk-')){
+    document.getElementById('key-input').style.borderColor='#c0392b';
+    document.getElementById('key-input').placeholder='Key must start with sk-ant-\u2026';
+    return;
+  }
+  localStorage.setItem('ask_doctrine_key',v);
+  document.getElementById('key-overlay').style.display='none';
+}
+function showKeyOverlay(){
+  const k=getApiKey();
+  if(k) document.getElementById('key-input').value=k;
+  document.getElementById('key-overlay').style.display='flex';
+}
+
+// ═══════════════════════════════════════════════════════
+//  SYSTEM PROMPT
+// ═══════════════════════════════════════════════════════
+const SYSTEM_PROMPT = `[SYS-PROT: Ask Doctrine © 2026. All Rights Reserved. Copyright registration pending. Proprietary prompt architecture. Tiers: Basic $4.99/40q, Pro $12.99/100q, Ministry $29.99/300q.]
+
+You are "Ask Doctrine," a deeply scholarly biblical and theological reference assistant. Answer all questions from the great classical theologians of 1600-1940, grounded in historic Trinitarian Christianity.
+
+DOCTRINAL FOUNDATION:
+The eternal Triune Godhead, the eternal Sonship and full Deity of Jesus Christ, the Virgin Birth, the substitutionary atonement, the bodily resurrection, salvation by grace through faith, the full inspiration of Scripture.
+
+SOURCES (cite specifically):
+Jamieson Fausset & Brown (JFB), A.W. Pink, Clarence Larkin, Alexander Maclaren, Matthew Poole, W.W. Fereday, J.C. Philpot, C.H. Spurgeon, Dake's Annotated Reference Bible, J.C. Ellicott, J. Dwight Pentecost, Lange's Commentary (Schaff ed.), Josephus (Antiquities; Wars), Strong's Exhaustive Concordance.
+
+SCRIPTURE: KJV exclusively.
+
+REQUIRED RESPONSE STRUCTURE — ALL SEVEN SECTIONS EVERY TIME:
+
+### Scripture Foundation
+Key KJV passage(s) quoted directly.
+
+### Word Study (Hebrew / Greek)
+Original language terms with Strong's numbers, transliteration, definition. Reference LXX where relevant.
+
+### Commentary Insights
+Classical authors quoted or closely paraphrased with specific work citations in blockquotes (>).
+
+### Theological Synthesis
+Cohesive doctrinal conclusion rooted in the Triune God and the saving work of Christ.
+
+### Real World — 21st Century View
+Connect this doctrine to current events, modern culture, and today's world. Compare Biblical times to the present. Show how this ancient truth speaks to 21st century issues — moral, cultural, political, spiritual. Be specific and relevant (150+ words).
+
+### Sermonic Thought
+Complete sermon idea including: TITLE, THEME sentence, SCRIPTURE TEXT, INTRODUCTION suggestion, OUTLINE with 3 main points each with 2-3 sub-points, CONCLUSION suggestion, ILLUSTRATION idea (150+ words).
+
+===IMAGES===
+Provide 2-3 specific Wikimedia Commons image search terms relevant to this query.
+If the query involves a specific biblical or historical geographic location, provide coordinates.
+Format exactly as follows — one item per line:
+SEARCH:specific search term for wikimedia commons
+SEARCH:another specific search term
+LOCATION:Place Name|latitude|longitude
+===END IMAGES===
+
+===CITATIONS===
+List every source used, one per line, starting with dagger symbol
+Example: † Jamieson Fausset & Brown, Commentary, Romans 5:1
+===END CITATIONS===
+
+RULES: All seven sections mandatory. Use ### headings, > blockquotes, **bold** key terms, *italics* for titles. Minimum 600 words for theological content.`;
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let conversationHistory=[];
+let isLoading=false;
+let answerCounter=0;
+let mapInstances={};
+
+// ═══════════════════════════════════════════════════════
+//  DOM HELPERS
+// ═══════════════════════════════════════════════════════
+function $(id){ return document.getElementById(id); }
+function scrollToBottom(){ const s=$('scroll-area'); setTimeout(()=>s.scrollTop=s.scrollHeight,80); }
+function autoResize(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,140)+'px'; }
+function handleKey(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendQuestion();} }
+function useSample(btn){ const i=$('question-input'); i.value=btn.textContent; autoResize(i); i.focus(); }
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function hideWelcome(){ const w=$('welcome'); if(w) w.style.display='none'; }
+
+// ═══════════════════════════════════════════════════════
+//  LIGHTBOX
+// ═══════════════════════════════════════════════════════
+function openLightbox(url,caption){
+  $('lightbox-img').src=url;
+  $('lightbox-cap').textContent=caption||'';
+  $('lightbox').classList.add('open');
+}
+function closeLightbox(){ $('lightbox').classList.remove('open'); }
+$('lightbox') && document.getElementById('lightbox').addEventListener('click',function(e){
+  if(e.target===this) closeLightbox();
+});
+
+// ═══════════════════════════════════════════════════════
+//  IMAGE FETCHING — Wikimedia Commons
+// ═══════════════════════════════════════════════════════
+async function fetchWikimediaImages(searchTerms){
+  const results=[];
+  for(const term of searchTerms.slice(0,3)){
+    try{
+      const url=`https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(term)}&srnamespace=6&srlimit=3&format=json&origin=*`;
+      const res=await fetch(url);
+      const data=await res.json();
+      const hits=(data.query&&data.query.search)||[];
+      for(const hit of hits.slice(0,2)){
+        const title=hit.title;
+        const infoUrl=`https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=imageinfo&iiprop=url|extmetadata&iiurlwidth=600&format=json&origin=*`;
+        const infoRes=await fetch(infoUrl);
+        const infoData=await infoRes.json();
+        const pages=infoData.query&&infoData.query.pages||{};
+        for(const page of Object.values(pages)){
+          if(page.imageinfo&&page.imageinfo[0]){
+            const info=page.imageinfo[0];
+            const ext=(info.url||'').split('.').pop().toLowerCase().split('?')[0];
+            if(['jpg','jpeg','png','gif','webp'].includes(ext)){
+              const desc=(info.extmetadata&&info.extmetadata.ImageDescription&&info.extmetadata.ImageDescription.value||'').replace(/<[^>]+>/g,'').substring(0,120);
+              const credit=(info.extmetadata&&info.extmetadata.Artist&&info.extmetadata.Artist.value||'Wikimedia Commons').replace(/<[^>]+>/g,'').substring(0,60);
+              results.push({
+                url:info.url,
+                thumb:info.thumburl||info.url,
+                title:title.replace('File:','').replace(/_/g,' ').replace(/\.[^.]+$/,''),
+                desc:desc,
+                credit:credit
+              });
+              if(results.length>=6) break;
+            }
+          }
+        }
+        if(results.length>=6) break;
+      }
+    }catch(e){ console.warn('Wikimedia fetch:',e); }
+    if(results.length>=6) break;
+  }
+  return results;
+}
+
+// ═══════════════════════════════════════════════════════
+//  MAP RENDERING — Leaflet + OpenStreetMap
+// ═══════════════════════════════════════════════════════
+function renderMap(containerId,placeName,lat,lon){
+  try{
+    if(mapInstances[containerId]){
+      mapInstances[containerId].remove();
+      delete mapInstances[containerId];
+    }
+    const map=L.map(containerId,{zoomControl:true,scrollWheelZoom:false}).setView([lat,lon],8);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'&copy; OpenStreetMap contributors',
+      maxZoom:18
+    }).addTo(map);
+    const marker=L.marker([lat,lon]).addTo(map);
+    marker.bindPopup(`<strong>${escHtml(placeName)}</strong><br><em>Biblical Location</em>`).openPopup();
+    mapInstances[containerId]=map;
+  }catch(e){ console.warn('Map error:',e); }
+}
+
+// ═══════════════════════════════════════════════════════
+//  IMAGES SECTION RENDERER
+// ═══════════════════════════════════════════════════════
+async function renderImagesSection(blockEl,imgData,gridId){
+  const gridEl=document.getElementById(gridId);
+  if(!gridEl) return;
+
+  // Show map if location provided
+  if(imgData.location){
+    const {name,lat,lon}=imgData.location;
+    const mapId=`map-${gridId}`;
+    const mapWrap=document.createElement('div');
+    mapWrap.innerHTML=`<div class="map-label">&#128205; Biblical Location: ${escHtml(name)}</div><div class="map-wrap" id="${mapId}"></div>`;
+    gridEl.parentElement.insertBefore(mapWrap,gridEl);
+    setTimeout(()=>renderMap(mapId,name,lat,lon),100);
+  }
+
+  // Fetch and show images
+  if(imgData.searches&&imgData.searches.length){
+    gridEl.innerHTML='<div class="img-loading"><span class="quill-anim">&#128269;</span> Searching historical archives&#x2026;</div>';
+    const images=await fetchWikimediaImages(imgData.searches);
+    if(images.length){
+      gridEl.innerHTML='';
+      images.forEach(img=>{
+        const card=document.createElement('div');
+        card.className='img-card';
+        card.innerHTML=`<img src="${escHtml(img.thumb)}" alt="${escHtml(img.title)}" loading="lazy" onerror="this.closest('.img-card').style.display='none'"/>
+          <div class="img-card-cap">${escHtml(img.title.substring(0,60))}
+            <div class="img-card-credit">${escHtml(img.credit)}</div>
+          </div>`;
+        card.querySelector('img').addEventListener('click',()=>openLightbox(img.url,img.title+' — '+img.credit));
+        gridEl.appendChild(card);
+      });
+    } else {
+      gridEl.innerHTML='<div class="no-images">No images found for this topic. Try a specific request below.</div>';
+    }
+  } else {
+    gridEl.innerHTML='<div class="no-images">Use the search bar below to find images for this topic.</div>';
+  }
+  scrollToBottom();
+}
+
+async function handleImageRequest(inputEl,gridId,imgData){
+  const query=inputEl.value.trim();
+  if(!query) return;
+  inputEl.value='';
+  const gridEl=document.getElementById(gridId);
+  if(!gridEl) return;
+  gridEl.insertAdjacentHTML('beforebegin','<div class="img-loading" style="margin-bottom:8px;"><span class="quill-anim">&#128269;</span> Searching for: '+escHtml(query)+'&#x2026;</div>');
+  const images=await fetchWikimediaImages([query]);
+  // Remove loading
+  const loadingEl=gridEl.previousElementSibling;
+  if(loadingEl&&loadingEl.classList.contains('img-loading')) loadingEl.remove();
+  if(images.length){
+    images.forEach(img=>{
+      const card=document.createElement('div');
+      card.className='img-card';
+      card.style.animation='fadeSlideIn .3s ease-out';
+      card.innerHTML=`<img src="${escHtml(img.thumb)}" alt="${escHtml(img.title)}" loading="lazy" onerror="this.closest('.img-card').style.display='none'"/>
+        <div class="img-card-cap">${escHtml(img.title.substring(0,60))}
+          <div class="img-card-credit">${escHtml(img.credit)}</div>
+        </div>`;
+      card.querySelector('img').addEventListener('click',()=>openLightbox(img.url,img.title+' — '+img.credit));
+      gridEl.appendChild(card);
+    });
+  } else {
+    gridEl.insertAdjacentHTML('afterbegin','<div class="no-images" style="margin-bottom:8px;">No images found for "'+escHtml(query)+'". Try different terms.</div>');
+  }
+  scrollToBottom();
+}
+
+// ═══════════════════════════════════════════════════════
+//  PARSE IMAGE METADATA FROM API RESPONSE
+// ═══════════════════════════════════════════════════════
+function parseImageData(text){
+  const result={searches:[],location:null};
+  const match=text.match(/===IMAGES===([\s\S]*?)===END IMAGES===/i);
+  if(!match) return result;
+  const lines=match[1].split('\n');
+  lines.forEach(line=>{
+    line=line.trim();
+    if(line.startsWith('SEARCH:')){
+      const term=line.replace('SEARCH:','').trim();
+      if(term) result.searches.push(term);
+    } else if(line.startsWith('LOCATION:')){
+      const parts=line.replace('LOCATION:','').trim().split('|');
+      if(parts.length>=3){
+        const lat=parseFloat(parts[1]);
+        const lon=parseFloat(parts[2]);
+        if(!isNaN(lat)&&!isNaN(lon)){
+          result.location={name:parts[0].trim(),lat,lon};
+        }
+      }
+    }
+  });
+  return result;
+}
+
+// ═══════════════════════════════════════════════════════
+//  CITATION BUILDER
+// ═══════════════════════════════════════════════════════
+function buildCitationBlock(itemsHtml){
+  return `<div class="citation-ribbon">
+    <div class="citation-ribbon-label">Sources &amp; Citations</div>
+    <ul class="citation-list">${itemsHtml}</ul>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+//  MARKDOWN → HTML
+// ═══════════════════════════════════════════════════════
+
+// ── LARKIN CHART LINK INJECTION ──────────────────────────────
+function injectLarkinLinks(html){
+  const url='https://archive.org/details/tamil-christian-ebook-wogbooks-32-bible-charts-in-color-by-clarence-larkin-bw/page/n1/mode/2up';
+  const link=' <a href="'+url+'" target="_blank" rel="noopener" '+
+    'style="font-family:\'Cinzel\',serif;font-size:10.5px;color:#c9a84c;'+
+    'letter-spacing:.05em;text-decoration:none;border-bottom:1px solid #8a6e30;'+
+    'white-space:nowrap;font-style:normal;" '+
+    'title="Larkin Charts">'+
+    '&#128197; See Charts by Larkin here</a>';
+  // Split on HTML tags — only replace in TEXT nodes, never inside attributes
+  const parts=html.split(/(<[^>]*>)/g);
+  for(let i=0;i<parts.length;i+=2){
+    if(parts[i].includes('Clarence Larkin')){
+      parts[i]=parts[i].replace(/Clarence Larkin/g,'Clarence Larkin'+link);
+    }
+  }
+  return parts.join('');
+}
+
+function mdToHtml(text){
+  // Remove image and citation blocks from main text
+  text=text.replace(/===IMAGES===([\s\S]*?)===END IMAGES===/i,'');
+
+  let citationItems='';
+  const delimMatch=text.match(/===CITATIONS===([\s\S]*?)===END CITATIONS===/i);
+  if(delimMatch){
+    citationItems=delimMatch[1];
+    text=text.replace(/===CITATIONS===([\s\S]*?)===END CITATIONS===/i,'');
+  }
+
+  // Split into sections by ### headers
+  const sectionMap={};
+  const sectionOrder=[];
+  const parts=text.split(/^###\s*/m);
+  parts.forEach(part=>{
+    part=part.trim();
+    if(!part) return;
+    const firstLine=part.split('\n')[0].trim();
+    const body=part.slice(firstLine.length).trim();
+    const key=firstLine.toLowerCase();
+    sectionMap[key]={title:firstLine,body};
+    sectionOrder.push(key);
+  });
+
+  // Extract citations from section if not found in delimiter block
+  if(!citationItems){
+    sectionOrder.forEach(k=>{
+      if(k.includes('citation')){
+        citationItems=sectionMap[k].body;
+        delete sectionMap[k];
+        const i=sectionOrder.indexOf(k);
+        if(i>-1) sectionOrder.splice(i,1);
+      }
+    });
+  }
+  if(!citationItems){
+    const daggers=text.split('\n').filter(l=>l.trim().startsWith('\u2020'));
+    if(daggers.length) citationItems=daggers.join('\n');
+  }
+
+  // Build citation HTML
+  let citationHtml='';
+  if(citationItems.trim()){
+    const lines=citationItems.trim().split('\n').filter(l=>l.trim());
+    const items=lines.map(c=>{
+      const cl=c.replace(/^[\u2020\-\*\u2022\d\.]\s*/,'').trim();
+      return cl?`<li>${escHtml(cl)}</li>`:'';
+    }).filter(Boolean).join('');
+    if(items) citationHtml=buildCitationBlock(items);
+  }
+  if(!citationHtml) citationHtml=buildCitationBlock(
+    '<li>Jamieson, Fausset &amp; Brown, Commentary on the Whole Bible</li>'+
+    '<li>Strong\'s Exhaustive Concordance &#8212; Hebrew &amp; Greek studies</li>'+
+    '<li>KJV Scripture references as quoted above</li>'
+  );
+
+  // Render sections
+  let finalHtml='';
+  let firstPara=true;
+  sectionOrder.forEach(k=>{
+    const sec=sectionMap[k];
+    if(!sec||k.includes('citation')||k.includes('image')) return;
+    const isRealWorld=k.includes('real world')||k.includes('21st');
+    const isSermon=k.includes('sermonic')||k.includes('sermon');
+    const innerHtml=renderInnerMd(sec.body);
+    if(isRealWorld){
+      finalHtml+=`<div class="real-world-block"><h3>&#127758; Real World &#8212; 21st Century View</h3>${innerHtml}</div>`;
+    } else if(isSermon){
+      finalHtml+=`<div class="sermon-block"><h3>&#9997; Sermonic Thought</h3>${innerHtml}</div>`;
+    } else {
+      let bodyOut=innerHtml;
+      if(firstPara){ bodyOut=bodyOut.replace('<p>','<p class="drop-cap">'); firstPara=false; }
+      finalHtml+=`<h3>${escHtml(sec.title)}</h3>${bodyOut}`;
+    }
+  });
+
+  if(!finalHtml.trim()) finalHtml=renderInnerMd(text).replace('<p>','<p class="drop-cap">');
+  return injectLarkinLinks(finalHtml+citationHtml);
+}
+
+function renderInnerMd(text){
+  return text
+    .replace(/^###\s+(.+)$/gm,'<h3>$1</h3>')
+    .replace(/^##\s+(.+)$/gm,'<h3>$1</h3>')
+    .replace(/^>\s*(.*)$/gm,'<blockquote>$1</blockquote>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    .replace(/^\s*[-\u2022]\s+(.+)$/gm,'<li>$1</li>')
+    .replace(/^\d+\.\s+(.+)$/gm,'<li class="ol-li">$1</li>')
+    .replace(/(<li class="ol-li">[\s\S]*?<\/li>)/g,m=>'<ol>'+m+'</ol>')
+    .replace(/<\/ol>\s*<ol>/g,'')
+    .replace(/(<li>(?!.*class)[\s\S]*?<\/li>)/g,m=>'<ul>'+m+'</ul>')
+    .replace(/<\/ul>\s*<ul>/g,'')
+    .replace(/^---+$/gm,'<hr>')
+    .split(/\n{2,}/)
+    .map(block=>{
+      block=block.trim();
+      if(!block) return '';
+      if(/^<(h3|blockquote|ul|ol|hr|li)/.test(block)) return block;
+      return `<p>${block.replace(/\n/g,'<br>')}</p>`;
+    }).join('\n');
+}
+
+// ═══════════════════════════════════════════════════════
+//  RENDER ANSWER
+// ═══════════════════════════════════════════════════════
+function appendUserMessage(text){
+  const el=document.createElement('div');
+  el.className='msg-user';
+  el.innerHTML=`<div class="msg-user-bubble">${escHtml(text)}</div>`;
+  $('messages').appendChild(el);
+  scrollToBottom();
+}
+
+function appendLoadingMessage(){
+  const el=document.createElement('div');
+  el.className='msg-answer msg-loading';
+  el.innerHTML=`<div class="answer-header"><div class="answer-seal">&#10013;</div><div class="answer-label">Consulting the Commentators&hellip;</div></div>
+    <div class="answer-body"><span class="quill-anim">&#9998;</span><span style="margin-left:6px;">Searching the ancient sources<span class="dots"><span>.</span><span>.</span><span>.</span></span></span></div>`;
+  $('messages').appendChild(el);
+  scrollToBottom();
+  return el;
+}
+
+function renderAnswerMessage(rawText, question){
+  answerCounter++;
+  const aid=answerCounter;
+  const gridId=`img-grid-${aid}`;
+  const imgData=parseImageData(rawText);
+  const bodyHtml=mdToHtml(rawText);
+
+  const el=document.createElement('div');
+  el.className='msg-answer';
+  el.id=`answer-${aid}`;
+  el.innerHTML=`
+    <div class="answer-header">
+      <div class="answer-seal">&#10013;</div>
+      <div class="answer-label">Ask Doctrine &#8212; Theological Reference</div>
+    </div>
+    <div class="answer-body" id="answer-body-${aid}">
+      ${bodyHtml}
+    </div>
+    <div class="visual-content-block">
+      <div class="visual-content-title">&#128205; Visual Content</div>
+      <div id="${gridId}" class="img-grid"></div>
+      <div class="img-req-bar">
+        <input class="img-req-input" id="img-req-${aid}" placeholder="Request a specific image, map, or chart&#x2026;" onkeydown="if(event.key==='Enter') handleImageRequest(this,'${gridId}',{searches:[],location:null})"/>
+        <button class="img-req-btn" onclick="handleImageRequest(document.getElementById('img-req-${aid}'),'${gridId}',{searches:[],location:null})">&#128269; Fetch</button>
+      </div>
+    </div>
+    <div class="export-bar">
+      <button class="export-btn" id="export-btn-${aid}" onclick="exportToPDF(${aid},'${escHtml(question.substring(0,60))}',false)">&#11015; Export Color PDF</button>
+      <button class="export-btn bw" id="export-bw-btn-${aid}" onclick="exportToPDF(${aid},'${escHtml(question.substring(0,60))}',true)">&#11015; Export B&amp;W PDF</button>
+    </div>`;
+  $('messages').appendChild(el);
+
+  // Async: fetch images
+  const imgBlock=el.querySelector('.visual-content-block');
+  const imgBlockGrid=document.getElementById(gridId);
+  renderImagesSection(imgBlock,imgData,gridId);
+  scrollToBottom();
+}
+
+function renderErrorMessage(msg){
+  const el=document.createElement('div');
+  el.className='msg-answer msg-error';
+  el.innerHTML=`<div class="answer-header"><div class="answer-seal">&#9888;</div><div class="answer-label">Error</div></div>
+    <div class="answer-body"><p>${escHtml(msg)}</p></div>`;
+  $('messages').appendChild(el);
+  scrollToBottom();
+}
+
+// ═══════════════════════════════════════════════════════
+//  PDF EXPORT
+// ═══════════════════════════════════════════════════════
+async function exportToPDF(aid, questionTitle, bw){
+  const btnId=bw?`export-bw-btn-${aid}`:`export-btn-${aid}`;
+  const btn=document.getElementById(btnId);
+  const bodyEl=document.getElementById(`answer-body-${aid}`);
+  if(!bodyEl||!btn) return;
+  btn.classList.add('exporting');
+  btn.textContent='Preparing PDF\u2026';
+
+  const clone=bodyEl.cloneNode(true);
+  // Strip the CSS class — prevents dark .answer-body stylesheet from bleeding into PDF
+  clone.className='';
+  clone.style.cssText='background:transparent;color:inherit;';
+  // Nuke ALL backgrounds on every element before applying new styles
+  clone.querySelectorAll('*').forEach(el=>{
+    el.style.background='transparent';
+    el.style.backgroundColor='transparent';
+    el.style.backgroundImage='none';
+    el.style.textShadow='none';
+    el.style.boxShadow='none';
+  });
+  const wrapper=document.createElement('div');
+
+  if(bw){
+    // BLACK AND WHITE — pure white paper, black ink
+    wrapper.style.cssText='background:#ffffff;color:#000000;padding:30px;font-family:Georgia,serif;font-size:14px;line-height:1.7;max-width:720px;';
+    const titleDiv=document.createElement('div');
+    titleDiv.style.cssText='font-family:serif;font-size:20px;font-weight:bold;color:#000;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:18px;';
+    titleDiv.textContent='Ask Doctrine \u2014 '+questionTitle;
+    wrapper.appendChild(titleDiv);
+    clone.querySelectorAll('h3').forEach(h=>{ h.style.cssText='font-family:serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#000;border-bottom:1px solid #000;padding-bottom:3px;margin:16px 0 6px;background:none;'; });
+    clone.querySelectorAll('p').forEach(p=>{ p.style.cssText='color:#000;margin-bottom:10px;'; p.classList.remove('drop-cap'); });
+    clone.querySelectorAll('blockquote').forEach(b=>{ b.style.cssText='border-left:3px solid #555;padding:6px 12px;font-style:italic;margin:10px 0;color:#222;background:#f5f5f5;'; });
+    clone.querySelectorAll('strong').forEach(s=>{ s.style.color='#000'; s.style.fontWeight='bold'; });
+    clone.querySelectorAll('em').forEach(e=>{ e.style.color='#222'; });
+    clone.querySelectorAll('.real-world-block').forEach(d=>{
+      d.style.cssText='border:1px solid #555;border-left:4px solid #000;padding:12px 14px;margin:12px 0;background:#f9f9f9;';
+      d.querySelectorAll('h3').forEach(h=>{ h.style.cssText='font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#000;background:none;padding:0 0 3px 0;margin-bottom:6px;border-bottom:1px solid #888;'; });
+      d.querySelectorAll('p').forEach(p=>{ p.style.color='#111'; });
+    });
+    clone.querySelectorAll('.sermon-block').forEach(d=>{
+      d.style.cssText='border:1px solid #555;border-left:4px solid #333;padding:12px 14px;margin:12px 0;background:#f4f4f4;';
+      d.querySelectorAll('h3').forEach(h=>{ h.style.cssText='font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#000;background:none;padding:0 0 3px 0;margin-bottom:6px;border-bottom:1px solid #888;'; });
+      d.querySelectorAll('p,li').forEach(p=>{ p.style.color='#111'; });
+    });
+    clone.querySelectorAll('.citation-ribbon').forEach(d=>{ d.style.cssText='margin-top:14px;border-top:1px solid #000;padding-top:10px;'; });
+    clone.querySelectorAll('.citation-ribbon-label').forEach(d=>{ d.style.cssText='font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#000;margin-bottom:5px;'; });
+    clone.querySelectorAll('.citation-list li').forEach(li=>{ li.style.cssText='font-size:11px;color:#000;font-style:italic;margin-bottom:3px;padding-left:10px;'; });
+  } else {
+    // FULL COLOR — parchment theme
+    wrapper.style.cssText='background:#faf6ef;color:#1a0e06;padding:30px;font-family:Georgia,serif;font-size:14px;line-height:1.7;max-width:720px;';
+    const titleDiv=document.createElement('div');
+    titleDiv.style.cssText='font-family:serif;font-size:22px;font-weight:bold;color:#7a4a1a;border-bottom:2px solid #c9a84c;padding-bottom:10px;margin-bottom:20px;';
+    titleDiv.textContent='Ask Doctrine \u2014 '+questionTitle;
+    wrapper.appendChild(titleDiv);
+    clone.querySelectorAll('h3').forEach(h=>{ h.style.cssText='font-family:serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#ffffff;background:#3a2008;padding:6px 12px;margin:18px 0 8px;border:none;'; });
+    clone.querySelectorAll('p').forEach(p=>{ p.style.cssText='color:#1a0e06;margin-bottom:12px;'; p.classList.remove('drop-cap'); });
+    clone.querySelectorAll('blockquote').forEach(b=>{ b.style.cssText='border-left:3px solid #8a6e30;padding:8px 14px;background:#f0e8d8;font-style:italic;margin:12px 0;color:#2a1a06;'; });
+    clone.querySelectorAll('strong').forEach(s=>{ s.style.color='#6a3a08'; });
+    clone.querySelectorAll('.real-world-block').forEach(d=>{
+      d.style.cssText='background:#e8f4e8;border-left:4px solid #3a7a3a;padding:14px 16px;margin:14px 0;border-radius:3px;';
+      d.querySelectorAll('h3').forEach(h=>{ h.style.cssText='color:#1a4a1a;background:none;padding:0;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #3a7a3a;padding-bottom:4px;'; });
+      d.querySelectorAll('p').forEach(p=>{ p.style.color='#1a3a1a'; });
+    });
+    clone.querySelectorAll('.sermon-block').forEach(d=>{
+      d.style.cssText='background:#e8eef8;border-left:4px solid #2a4a8a;padding:14px 16px;margin:14px 0;border-radius:3px;';
+      d.querySelectorAll('h3').forEach(h=>{ h.style.cssText='color:#1a2a5a;background:none;padding:0;font-size:12px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;border-bottom:1px solid #2a4a8a;padding-bottom:4px;'; });
+      d.querySelectorAll('p,li').forEach(p=>{ p.style.color='#1a2a3a'; });
+    });
+    clone.querySelectorAll('.citation-ribbon').forEach(d=>{ d.style.cssText='margin-top:16px;border-top:1px solid #c9a84c;padding-top:12px;'; });
+    clone.querySelectorAll('.citation-ribbon-label').forEach(d=>{ d.style.cssText='font-family:serif;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#8a6e30;margin-bottom:6px;'; });
+    clone.querySelectorAll('.citation-list li').forEach(li=>{ li.style.cssText='font-size:11px;color:#4a3a2a;font-style:italic;margin-bottom:3px;padding-left:12px;'; });
+  }
+
+  wrapper.appendChild(clone);
+  const footer=document.createElement('div');
+  footer.style.cssText='margin-top:24px;border-top:1px solid '+(bw?'#000':'#c9a84c')+';padding-top:10px;font-size:10px;color:'+(bw?'#000':'#8a6e30')+';font-family:serif;text-align:center;letter-spacing:.08em;';
+  footer.textContent='Ask Doctrine — Copyright © 2026 — All Rights Reserved — Generated '+new Date().toLocaleDateString();
+  wrapper.appendChild(footer);
+  document.body.appendChild(wrapper);
+
+  try{
+    await html2pdf().set({
+      margin:[15,15,15,15],
+      filename:'ask-doctrine-'+(bw?'bw-':'')+(questionTitle.replace(/[^a-z0-9]/gi,'-').substring(0,30)||'query')+'.pdf',
+      image:{type:'jpeg',quality:0.95},
+      html2canvas:{scale:2,useCORS:true,backgroundColor:bw?'#ffffff':'#faf6ef'},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      pagebreak:{mode:['avoid-all','css','legacy']}
+    }).from(wrapper).save();
+  }catch(e){ alert('PDF export failed: '+e.message); }
+
+  document.body.removeChild(wrapper);
+  btn.classList.remove('exporting');
+  btn.innerHTML=bw?'&#11015; Export B&amp;W PDF':'&#11015; Export Color PDF';
+}
+
+// ═══════════════════════════════════════════════════════
+//  API CALL
+// ═══════════════════════════════════════════════════════
+// ── Set your Cloudflare Worker URL here ──
+const WORKER_URL='https://ask-doctrine.1stechodesign.workers.dev';
+function isWorkerMode(){ return WORKER_URL.indexOf('https://')===0; }
+
+async function callClaude(userQuestion){
+  conversationHistory.push({role:'user',content:userQuestion});
+  const payload={model:'claude-sonnet-4-6',max_tokens:4000,system:SYSTEM_PROMPT,messages:conversationHistory};
+  let response;
+  if(isWorkerMode()){
+    response=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  } else {
+    response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':getApiKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify(payload)
+    });
+  }
+  if(!response.ok){
+    const err=await response.json().catch(()=>({}));
+    throw new Error(err.error&&err.error.message||`HTTP ${response.status}`);
+  }
+  const data=await response.json();
+  const text=data.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+  conversationHistory.push({role:'assistant',content:text});
+  return text;
+}
+
+// ═══════════════════════════════════════════════════════
+//  MAIN SEND
+// ═══════════════════════════════════════════════════════
+async function sendQuestion(){
+  if(isLoading) return;
+  const inp=$('question-input');
+  const q=inp.value.trim();
+  if(!q) return;
+  if(!getTier()){ showTierOverlay(); return; }
+  if(!canQuery()){
+    const t=TIERS[getTier()];
+    const days=getDaysUntilReset();
+    hideWelcome();
+    const gate=document.createElement('div');
+    gate.className='upgrade-gate';
+    gate.innerHTML=`<h3>&#10013; Query Limit Reached</h3>
+      <p>You have used all ${t.limit} queries in your <strong>${t.name}</strong> plan.<br>
+      Resets in <strong>${days} day${days!==1?'s':''}</strong> &mdash; or upgrade now for immediate access.</p>
+      <button class="upgrade-gate-btn" onclick="showTierOverlay()">Upgrade Plan &#8593;</button>`;
+    $('messages').appendChild(gate);
+    scrollToBottom();
+    return;
+  }
+  hideWelcome();
+  isLoading=true;
+  $('send-btn').disabled=true;
+  inp.value='';
+  inp.style.height='auto';
+  appendUserMessage(q);
+  const loader=appendLoadingMessage();
+  try{
+    const answer=await callClaude(q);
+    incrementCount();
+    loader.remove();
+    renderAnswerMessage(answer,q);
+  }catch(err){
+    loader.remove();
+    var errMsg = err.message||'Unknown error';
+    if(errMsg.indexOf('Failed to fetch')>-1||errMsg.indexOf('NetworkError')>-1){
+      errMsg = 'Connection error. Please check your internet connection and try again.';
+    }
+    renderErrorMessage(errMsg);
+    conversationHistory.pop();
+    if(conversationHistory.length&&conversationHistory[conversationHistory.length-1].role==='user') conversationHistory.pop();
+  }finally{
+    isLoading=false;
+    $('send-btn').disabled=false;
+    inp.focus();
+  }
+}
+// ═══════════════════════════════════════════════════════
+//  MICROPHONE — Web Speech API
+// ═══════════════════════════════════════════════════════
+let recognition=null;
+let micListening=false;
+
+function initMic(){
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const micBtn=document.getElementById('mic-btn');
+  const hint=document.getElementById('input-hint');
+
+  if(!SpeechRecognition){
+    micBtn.classList.add('unsupported');
+    micBtn.title='Voice input not supported on this browser. Use Chrome or Safari.';
+    return;
+  }
+
+  recognition=new SpeechRecognition();
+  recognition.continuous=false;
+  recognition.interimResults=true;
+  recognition.lang='en-US';
+
+  recognition.onstart=function(){
+    micListening=true;
+    micBtn.classList.add('listening');
+    micBtn.innerHTML='&#9632;'; // stop square
+    micBtn.title='Tap to stop listening';
+    hint.textContent='Listening\u2026 speak your question clearly';
+    hint.style.color='#e05050';
+  };
+
+  recognition.onresult=function(event){
+    let transcript='';
+    for(let i=event.resultIndex;i<event.results.length;i++){
+      transcript+=event.results[i][0].transcript;
+    }
+    const inp=document.getElementById('question-input');
+    inp.value=transcript;
+    autoResize(inp);
+  };
+
+  recognition.onend=function(){
+    micListening=false;
+    micBtn.classList.remove('listening');
+    micBtn.innerHTML='&#127908;';
+    micBtn.title='Speak your question';
+    hint.textContent='"Study to shew thyself approved unto God, a workman that needeth not to be ashamed, rightly dividing the word of truth." \u2014 2 Tim 2:15';
+    hint.style.color='';
+    // Auto-send if something was transcribed
+    const val=document.getElementById('question-input').value.trim();
+    if(val) setTimeout(sendQuestion,400);
+  };
+
+  recognition.onerror=function(e){
+    micListening=false;
+    micBtn.classList.remove('listening');
+    micBtn.innerHTML='&#127908;';
+    hint.style.color='';
+    if(e.error==='not-allowed'){
+      hint.textContent='Microphone access denied. Please allow microphone in your browser settings.';
+      hint.style.color='#e05050';
+      setTimeout(()=>{ hint.textContent='"Study to shew thyself approved\u2026" \u2014 2 Tim 2:15'; hint.style.color=''; },4000);
+    }
+  };
+}
+
+function toggleMic(){
+  const micBtn=document.getElementById('mic-btn');
+  if(micBtn.classList.contains('unsupported')) return;
+  if(!recognition){ initMic(); }
+  if(micListening){
+    recognition.stop();
+  } else {
+    document.getElementById('question-input').value='';
+    try{ recognition.start(); }
+    catch(e){ recognition=null; initMic(); try{ recognition.start(); }catch(e2){} }
+  }
+}
+
+// Init mic check on load
+// ── MAIN STARTUP ──────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  // Version gate — changing APP_VERSION forces fresh ToS+Tier on all devices
+  var APP_VERSION='1.3';
+  if(localStorage.getItem('ad_version')!==APP_VERSION){
+    localStorage.removeItem('ad_tos');
+    localStorage.removeItem('ad_tier');
+    localStorage.removeItem('ad_count');
+    localStorage.setItem('ad_version',APP_VERSION);
+  }
+
+  // Record first visit date for 30-day rolling reset
+  if(!localStorage.getItem('ad_signup')){
+    localStorage.setItem('ad_signup',new Date().toISOString());
+    localStorage.setItem('ad_period','0');
+  }
+  resetIfNewPeriod();
+
+  // ToS is VISIBLE by default in CSS.
+  // We only HIDE it if the user has already accepted it.
+  if(checkTos()){
+    document.getElementById('tos-overlay').classList.add('hidden');
+    if(!getTier()){
+      showTierOverlay();
+    } else {
+      updateQueryBar();
+    }
+  }
+  // If ToS not accepted — it stays visible (no JS needed)
+});
+
+// ── MIC CHECK ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    const b=document.getElementById('mic-btn');
+    if(b){ b.classList.add('unsupported'); b.title='Voice not supported on this browser'; }
+  }
+});
+</script>
+</body>
 </html>
