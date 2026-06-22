@@ -993,8 +993,8 @@ function renderAnswerMessage(rawText, question){
       </div>
     </div>
     <div class="export-bar">
-      <button class="export-btn" id="export-btn-${aid}" onclick="exportToPDF(${aid},'${escHtml(question.substring(0,60))}',false)">&#11015; Export Color PDF</button>
-      <button class="export-btn bw" id="export-bw-btn-${aid}" onclick="exportToPDF(${aid},'${escHtml(question.substring(0,60))}',true)">&#11015; Export B&amp;W PDF</button>
+      <button class="export-btn" id="export-btn-${aid}" onclick="exportToPDF(${aid},${JSON.stringify(question)},false)">&#11015; Export Color PDF</button>
+      <button class="export-btn bw" id="export-bw-btn-${aid}" onclick="exportToPDF(${aid},${JSON.stringify(question)},true)">&#11015; Export B&amp;W PDF</button>
     </div>`;
   $('messages').appendChild(el);
 
@@ -1043,8 +1043,15 @@ async function exportToPDF(aid, questionTitle, bw){
     // BLACK AND WHITE — pure white paper, black ink
     wrapper.style.cssText='background:#ffffff;color:#000000;padding:30px;font-family:Georgia,serif;font-size:14px;line-height:1.7;max-width:720px;';
     const titleDiv=document.createElement('div');
-    titleDiv.style.cssText='font-family:serif;font-size:20px;font-weight:bold;color:#000;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:18px;';
-    titleDiv.textContent='Ask Doctrine \u2014 '+questionTitle;
+    titleDiv.style.cssText='font-family:serif;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:18px;background:transparent;word-wrap:break-word;';
+    const titleLabel=document.createElement('div');
+    titleLabel.style.cssText='font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#555;margin-bottom:5px;';
+    titleLabel.textContent='Ask Doctrine \u2014 Query';
+    const titleText=document.createElement('div');
+    titleText.style.cssText='font-size:16px;font-weight:bold;color:#000;line-height:1.5;';
+    titleText.textContent=questionTitle;
+    titleDiv.appendChild(titleLabel);
+    titleDiv.appendChild(titleText);
     wrapper.appendChild(titleDiv);
     clone.querySelectorAll('h3').forEach(h=>{ h.style.cssText='font-family:serif;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#000;border-bottom:1px solid #000;padding-bottom:3px;margin:16px 0 6px;background:none;'; });
     clone.querySelectorAll('p').forEach(p=>{ p.style.cssText='color:#000;margin-bottom:10px;'; p.classList.remove('drop-cap'); });
@@ -1068,8 +1075,15 @@ async function exportToPDF(aid, questionTitle, bw){
     // FULL COLOR — parchment theme
     wrapper.style.cssText='background:#faf6ef;color:#1a0e06;padding:30px;font-family:Georgia,serif;font-size:14px;line-height:1.7;max-width:720px;';
     const titleDiv=document.createElement('div');
-    titleDiv.style.cssText='font-family:serif;font-size:22px;font-weight:bold;color:#7a4a1a;border-bottom:2px solid #c9a84c;padding-bottom:10px;margin-bottom:20px;';
-    titleDiv.textContent='Ask Doctrine \u2014 '+questionTitle;
+    titleDiv.style.cssText='font-family:serif;border-bottom:2px solid #c9a84c;padding-bottom:10px;margin-bottom:20px;background:transparent;word-wrap:break-word;';
+    const titleLabel=document.createElement('div');
+    titleLabel.style.cssText='font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a6e30;margin-bottom:5px;font-family:serif;';
+    titleLabel.textContent='Ask Doctrine \u2014 Query';
+    const titleText=document.createElement('div');
+    titleText.style.cssText='font-size:18px;font-weight:bold;color:#7a4a1a;line-height:1.5;';
+    titleText.textContent=questionTitle;
+    titleDiv.appendChild(titleLabel);
+    titleDiv.appendChild(titleText);
     wrapper.appendChild(titleDiv);
     clone.querySelectorAll('h3').forEach(h=>{ h.style.cssText='font-family:serif;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#ffffff;background:#3a2008;padding:6px 12px;margin:18px 0 8px;border:none;'; });
     clone.querySelectorAll('p').forEach(p=>{ p.style.cssText='color:#1a0e06;margin-bottom:12px;'; p.classList.remove('drop-cap'); });
