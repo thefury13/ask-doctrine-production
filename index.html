@@ -355,8 +355,14 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
       Check your inbox for a message from <strong>gumroad.com</strong>.<br><br>
       Not yet subscribed?&nbsp;
       <a href="https://www.askdoctrine.com" target="_blank">Visit Ask Doctrine &rarr;</a><br><br>
+      <strong style="color:var(--gold-dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;">UPGRADING YOUR PLAN</strong><br>
+      To upgrade to Pro or Ministry:<br>
+      1. Subscribe to the higher plan at <a href="https://www.askdoctrine.com" target="_blank">www.askdoctrine.com</a><br>
+      2. Cancel your current plan in your Gumroad account<br>
+      3. Enter your new license key here<br>
+      4. Your new tier activates immediately<br><br>
       Need help?&nbsp;
-      <a href="mailto:1stechodesign@gmail.com">Contact Support</a>
+      <a href="mailto:1stechodesign@gmail.com">Email 1stechodesign@gmail.com</a>
     </div>
   </div>
 </div>
@@ -1154,8 +1160,12 @@ async function sendQuestion(){
     gate.className='upgrade-gate';
     gate.innerHTML=`<h3>&#10013; Query Limit Reached</h3>
       <p>You have used all ${t.limit} queries in your <strong>${t.name}</strong> plan.<br>
-      Resets in <strong>${days} day${days!==1?'s':''}</strong> &mdash; or upgrade now for immediate access.</p>
-      <button class="upgrade-gate-btn" onclick="showTierOverlay()">Upgrade Plan &#8593;</button>`;
+      Resets in <strong>${days} day${days!==1?'s':''}</strong>.<br><br>
+      <strong>To upgrade to Pro or Ministry:</strong><br>
+      1. Visit <a href="https://www.askdoctrine.com" target="_blank" style="color:var(--gold);">www.askdoctrine.com</a> and subscribe to a higher plan<br>
+      2. Cancel your current plan in your Gumroad account<br>
+      3. Enter your new license key below to activate immediately</p>
+      <button class="upgrade-gate-btn" onclick="showLicenseOverlay()">Enter New License Key &#8593;</button>`;
     $('messages').appendChild(gate);
     scrollToBottom();
     return;
