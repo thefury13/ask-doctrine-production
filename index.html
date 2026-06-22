@@ -205,39 +205,25 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
 .tos-copyright{text-align:center;font-size:10px;color:var(--gold-dim);letter-spacing:.06em;}
 
 /* ═══════════════════════════════════════════════════════════
-   TIER SELECTOR OVERLAY
-   ═══════════════════════════════════════════════════════════ */
-#tier-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,.94);
-  z-index:1999;
-  display:none;
-  overflow-y:auto;
-  -webkit-overflow-scrolling:touch;
-  padding:24px 16px 48px;
-  backdrop-filter:blur(6px);
-}
-#tier-modal{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:4px;padding:22px 18px;max-width:680px;width:100%;margin:0 auto;box-shadow:0 8px 48px rgba(0,0,0,.8);}
-#tier-modal h2{font-family:'Cinzel Decorative',serif;font-size:clamp(15px,3vw,20px);color:var(--gold);text-align:center;margin-bottom:6px;letter-spacing:.06em;}
-.tier-subtitle{font-style:italic;color:var(--parchment-dim);font-size:13px;text-align:center;margin-bottom:16px;}
-.tier-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:11px;margin-bottom:16px;}
-.tier-card{background:var(--panel);border:1px solid var(--border);border-radius:4px;padding:15px 11px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
-.tier-card:hover{border-color:var(--gold-dim);transform:translateY(-2px);}
-.tier-card.popular{border:2px solid var(--gold);}
-.tier-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#0e0906;font-family:'Cinzel',serif;font-size:8.5px;letter-spacing:.1em;padding:2px 9px;border-radius:10px;white-space:nowrap;}
-.tier-name{font-family:'Cinzel',serif;font-size:11.5px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px;}
-.tier-price{font-family:'Cinzel Decorative',serif;font-size:22px;color:var(--ink);line-height:1;}
-.tier-price span{font-size:11px;color:var(--parchment-dim);font-family:'EB Garamond',serif;}
-.tier-queries{font-family:'Cinzel',serif;font-size:9px;color:var(--gold-dim);letter-spacing:.1em;text-transform:uppercase;margin:7px 0;}
-.tier-features{list-style:none;font-size:12px;color:var(--parchment-dim);text-align:left;margin:8px 0 10px;}
-.tier-features li{padding:2px 0;display:flex;align-items:flex-start;gap:5px;}
-.tier-features li::before{content:'✓';color:var(--green);flex-shrink:0;font-size:10.5px;}
-.tier-features li.no::before{content:'✗';color:#c0392b;}
-.tier-features li.no{color:#777;}
-.tier-select-btn{width:100%;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;color:#0e0906;font-family:'Cinzel',serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:8px;border-radius:3px;cursor:pointer;transition:opacity .2s;}
-.tier-select-btn:hover{opacity:.85;}
-.tier-note{text-align:center;font-size:11px;color:var(--parchment-dim);font-style:italic;border-top:1px solid var(--border);padding-top:11px;line-height:1.7;}
-.tier-note a{color:var(--gold-dim);}
+   LICENSE KEY OVERLAY
+   ═══════════════════════════════════════════════════════════════ */
+#license-overlay{position:fixed;inset:0;background:rgba(0,0,0,.96);z-index:1999;display:none;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px 16px 48px;backdrop-filter:blur(6px);}
+#license-overlay.open{display:block;}
+#license-modal{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--gold);border-radius:4px;padding:28px 24px;max-width:460px;width:100%;margin:0 auto;box-shadow:0 8px 48px rgba(0,0,0,.9);}
+#license-modal h2{font-family:'Cinzel Decorative',serif;font-size:clamp(16px,3vw,20px);color:var(--gold);text-align:center;margin-bottom:8px;}
+.license-subtitle{font-style:italic;color:var(--parchment-dim);font-size:13px;text-align:center;margin-bottom:20px;line-height:1.65;}
+.license-input-wrap{margin-bottom:12px;}
+.license-input-label{font-family:'Cinzel',serif;font-size:10px;color:var(--gold-dim);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;display:block;}
+#license-key-input{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:3px;color:var(--ink);font-family:'EB Garamond',serif;font-size:16px;padding:13px 14px;outline:none;transition:border-color .2s;letter-spacing:.06em;}
+#license-key-input:focus{border-color:var(--gold-dim);}
+#license-key-input::placeholder{color:var(--parchment-dim);opacity:.5;font-style:italic;letter-spacing:0;}
+#license-submit-btn{width:100%;background:linear-gradient(135deg,var(--gold-dim),var(--gold));border:none;color:#0e0906;font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:13px;border-radius:3px;cursor:pointer;transition:opacity .2s;margin-bottom:12px;}
+#license-submit-btn:hover{opacity:.88;}
+#license-submit-btn:disabled{opacity:.4;cursor:not-allowed;}
+#license-error{font-size:13px;color:#e05050;font-style:italic;text-align:center;margin-bottom:10px;display:none;}
+#license-status{font-size:13px;color:var(--gold-dim);font-style:italic;text-align:center;margin-bottom:10px;display:none;}
+.license-help{font-size:11.5px;color:var(--parchment-dim);text-align:center;line-height:1.75;border-top:1px solid var(--border);padding-top:12px;}
+.license-help a{color:var(--gold-dim);text-decoration:none;}
 
 /* QUERY BAR */
 #query-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.08em;color:var(--gold-dim);text-transform:uppercase;}
@@ -344,59 +330,33 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
   </div>
 </div>
 
-<!-- TIER SELECT OVERLAY -->
-<div id="tier-overlay">
-  <div id="tier-modal">
+<!-- LICENSE KEY OVERLAY -->
+<div id="license-overlay">
+  <div id="license-modal">
     <h2>Ask Doctrine</h2>
-    <div class="tier-subtitle">"Study to shew thyself approved unto God" &mdash; 2 Timothy 2:15</div>
-    <div class="tier-cards">
-      <div class="tier-card" onclick="selectTier('basic')">
-        <div class="tier-name">Basic</div>
-        <div class="tier-price">$4.99<span>/mo</span></div>
-        <div class="tier-queries">40 queries / month</div>
-        <ul class="tier-features">
-          <li>Full doctrine answers</li>
-          <li>Hebrew &amp; Greek studies</li>
-          <li>Commentary insights</li>
-          <li>Sermonic outlines</li>
-          <li>Visual Content &amp; Maps</li>
-          <li class="no">PDF Export</li>
-        </ul>
-        <button class="tier-select-btn">Select Basic</button>
-      </div>
-      <div class="tier-card popular" onclick="selectTier('pro')">
-        <div class="tier-badge">MOST POPULAR</div>
-        <div class="tier-name">Pro</div>
-        <div class="tier-price">$12.99<span>/mo</span></div>
-        <div class="tier-queries">100 queries / month</div>
-        <ul class="tier-features">
-          <li>Everything in Basic</li>
-          <li>Color PDF Export</li>
-          <li>B&amp;W PDF Export</li>
-          <li>Save &amp; Archive results</li>
-        </ul>
-        <button class="tier-select-btn">Select Pro</button>
-      </div>
-      <div class="tier-card" onclick="selectTier('ministry')">
-        <div class="tier-name">Ministry</div>
-        <div class="tier-price">$29.99<span>/mo</span></div>
-        <div class="tier-queries">300 queries / month</div>
-        <ul class="tier-features">
-          <li>Everything in Pro</li>
-          <li>300 queries / month</li>
-          <li>Sermon research library</li>
-          <li>Church &amp; seminary use</li>
-        </ul>
-        <button class="tier-select-btn">Select Ministry</button>
-      </div>
+    <div class="license-subtitle">
+      Enter the license key from your Gumroad confirmation email<br>
+      to activate your subscription on this device.
     </div>
-    <div class="tier-note">
-      Subscribe at your Gumroad store to activate your plan.<br>
-      No API key needed &mdash; everything is handled for you.<br>
-      Queries reset every 30 days from your signup date.<br><br>
-      <span style="font-family:'Cinzel',serif;font-size:10px;color:var(--gold-dim);letter-spacing:.06em;">
-        Ask Doctrine &mdash; Copyright &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved
-      </span>
+    <div class="license-input-wrap">
+      <label class="license-input-label" for="license-key-input">Your License Key</label>
+      <input type="text" id="license-key-input"
+             placeholder="XXXX-XXXX-XXXX-XXXX"
+             autocomplete="off" autocorrect="off"
+             autocapitalize="characters" spellcheck="false"/>
+    </div>
+    <div id="license-error"></div>
+    <div id="license-status"></div>
+    <button id="license-submit-btn" onclick="submitLicenseKey()">
+      Activate My Subscription &#10022;
+    </button>
+    <div class="license-help">
+      Your key was emailed to you by Gumroad after purchase.<br>
+      Check your inbox for a message from <strong>gumroad.com</strong>.<br><br>
+      Not yet subscribed?&nbsp;
+      <a href="https://gumroad.com" target="_blank">Visit our Gumroad store &rarr;</a><br><br>
+      Need help?&nbsp;
+      <a href="mailto:support@askdoctrine.com">Contact Support</a>
     </div>
   </div>
 </div>
@@ -453,7 +413,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
     </div>
     <button id="send-btn" onclick="sendQuestion()">Inquire &#10022;</button>
   </div>
-  <div style="text-align:center;font-size:10px;color:var(--gold-dim);opacity:.5;padding:2px 0;letter-spacing:.08em;font-family:'Cinzel',serif;">Ask Doctrine &mdash; Copyright &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved &nbsp;&bull;&nbsp; <span style="cursor:pointer;text-decoration:underline;" onclick="showTierOverlay()">Manage Plan</span></div>
+  <div style="text-align:center;font-size:10px;color:var(--gold-dim);opacity:.5;padding:2px 0;letter-spacing:.08em;font-family:'Cinzel',serif;">Ask Doctrine &mdash; Copyright &copy; 2026 &nbsp;&bull;&nbsp; All Rights Reserved &nbsp;&bull;&nbsp; <span style="cursor:pointer;text-decoration:underline;" onclick="showLicenseOverlay()">Manage Plan</span></div>
 <div class="input-hint" id="input-hint">"Study to shew thyself approved unto God, a workman that needeth not to be ashamed, rightly dividing the word of truth." &#8212; 2 Tim 2:15</div>
 </div>
 </div>
@@ -468,16 +428,21 @@ function acceptTos(){
   if(!document.getElementById('tos-check').checked) return;
   localStorage.setItem('ad_tos','1');
   document.getElementById('tos-overlay').classList.add('hidden');
-  if(!getTier()) showTierOverlay();
-  else updateQueryBar();
+  // After ToS — show license key entry if no valid key stored
+  if(!getTier()||!getLicenseKey()){
+    showLicenseOverlay();
+  } else {
+    updateQueryBar();
+    revalidateIfNeeded();
+  }
 }
 function hasPDF(){ const t=TIERS[getTier()]; return !!(t&&t.pdf); }
 
-// ── COMPLETE TIER SYSTEM ──────────────────────────────────────
+// ── TIERS — hardcoded limits enforced by validated key ──────────
 const TIERS={
   basic:   {name:'Basic',   price:'$4.99/mo', limit:40,  pdf:false},
   pro:     {name:'Pro',     price:'$12.99/mo',limit:100, pdf:true},
-  ministry:{name:'Ministry',price:'$29.99/mo',limit:300,pdf:true}
+  ministry:{name:'Ministry',price:'$29.99/mo',limit:300, pdf:true}
 };
 function getTier(){ return localStorage.getItem('ad_tier')||''; }
 function getCount(){ return parseInt(localStorage.getItem('ad_count')||'0',10); }
@@ -488,10 +453,7 @@ function resetIfNewPeriod(){
   const daysSince=Math.floor((new Date()-new Date(signup))/86400000);
   const period=Math.floor(daysSince/30);
   const lastPeriod=parseInt(localStorage.getItem('ad_period')||'0',10);
-  if(period>lastPeriod){
-    localStorage.setItem('ad_count','0');
-    localStorage.setItem('ad_period',String(period));
-  }
+  if(period>lastPeriod){ localStorage.setItem('ad_count','0'); localStorage.setItem('ad_period',String(period)); }
 }
 function getDaysUntilReset(){
   const signup=localStorage.getItem('ad_signup');
@@ -499,36 +461,89 @@ function getDaysUntilReset(){
   const daysSince=Math.floor((new Date()-new Date(signup))/86400000);
   return 30-(daysSince%30);
 }
-function canQuery(){
-  const t=TIERS[getTier()];
-  if(!t) return false;
-  if(t.limit===null) return true;
-  return getCount()<t.limit;
-}
-function incrementCount(){
-  resetIfNewPeriod();
-  localStorage.setItem('ad_count',String(getCount()+1));
-  updateQueryBar();
-}
-function showTierOverlay(){
-  const el=document.getElementById('tier-overlay');
-  if(el){ el.style.display='block'; }
-}
-function hideTierOverlay(){
-  const el=document.getElementById('tier-overlay');
-  if(el){ el.style.display='none'; }
-}
-function selectTier(tier){
-  const prev=getTier();
+function canQuery(){ const t=TIERS[getTier()]; if(!t) return false; if(t.limit===null) return true; return getCount()<t.limit; }
+function incrementCount(){ resetIfNewPeriod(); localStorage.setItem('ad_count',String(getCount()+1)); updateQueryBar(); }
+function hasPDF(){ const t=TIERS[getTier()]; return !!(t&&t.pdf); }
+
+// ── LICENSE KEY SYSTEM ────────────────────────────────────────
+function getLicenseKey(){ return localStorage.getItem('ad_license_key')||''; }
+
+function setLicenseTier(tier,key){
   localStorage.setItem('ad_tier',tier);
-  if(prev!==tier) localStorage.setItem('ad_count','0');
+  localStorage.setItem('ad_license_key',key);
+  localStorage.setItem('ad_key_validated_at',Date.now().toString());
   if(!localStorage.getItem('ad_signup')){
     localStorage.setItem('ad_signup',new Date().toISOString());
     localStorage.setItem('ad_period','0');
   }
-  hideTierOverlay();
-  updateQueryBar();
 }
+
+function showLicenseOverlay(){
+  const el=document.getElementById('license-overlay');
+  if(el) el.classList.add('open');
+  const inp=document.getElementById('license-key-input');
+  if(inp) setTimeout(()=>inp.focus(),200);
+}
+function hideLicenseOverlay(){
+  const el=document.getElementById('license-overlay');
+  if(el) el.classList.remove('open');
+}
+
+async function submitLicenseKey(){
+  const input=document.getElementById('license-key-input');
+  const btn=document.getElementById('license-submit-btn');
+  const errEl=document.getElementById('license-error');
+  const statusEl=document.getElementById('license-status');
+  const key=(input?input.value:'').trim().toUpperCase();
+  if(!key||key.length<6){
+    if(errEl){errEl.textContent='Please enter your license key from your Gumroad email.';errEl.style.display='block';}
+    if(statusEl) statusEl.style.display='none';
+    return;
+  }
+  if(btn) btn.disabled=true;
+  if(errEl) errEl.style.display='none';
+  if(statusEl){statusEl.textContent='Validating your license…';statusEl.style.display='block';}
+  try{
+    const res=await fetch(WORKER_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'validate_key',license_key:key})
+    });
+    const data=await res.json();
+    if(data.valid&&data.tier){
+      setLicenseTier(data.tier,key);
+      if(statusEl){statusEl.textContent='✓ Activated — Welcome to Ask Doctrine '+(TIERS[data.tier]?TIERS[data.tier].name:'')+'!';statusEl.style.display='block';}
+      setTimeout(()=>{ hideLicenseOverlay(); updateQueryBar(); },1400);
+    } else {
+      if(errEl){errEl.textContent=data.error||'License key not recognized. Check your Gumroad email and try again.';errEl.style.display='block';}
+      if(statusEl) statusEl.style.display='none';
+      if(btn) btn.disabled=false;
+    }
+  }catch(e){
+    if(errEl){errEl.textContent='Connection error. Please check your internet and try again.';errEl.style.display='block';}
+    if(statusEl) statusEl.style.display='none';
+    if(btn) btn.disabled=false;
+  }
+}
+
+async function revalidateIfNeeded(){
+  const key=getLicenseKey();
+  if(!key||!isWorkerMode()) return;
+  const last=parseInt(localStorage.getItem('ad_key_validated_at')||'0',10);
+  if(Date.now()-last<86400000) return;
+  try{
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'validate_key',license_key:key})});
+    const data=await res.json();
+    if(data.valid&&data.tier){ localStorage.setItem('ad_key_validated_at',Date.now().toString()); localStorage.setItem('ad_tier',data.tier); }
+    else { localStorage.removeItem('ad_tier'); localStorage.removeItem('ad_license_key'); localStorage.removeItem('ad_key_validated_at'); showLicenseOverlay(); }
+  }catch(e){}
+}
+
+// Legacy stubs — prevent errors from any residual references
+function showTierOverlay(){ showLicenseOverlay(); }
+function hideTierOverlay(){ hideLicenseOverlay(); }
+function selectTier(t){}
+
 function updateQueryBar(){
   const tier=getTier();
   if(!tier) return;
@@ -1130,7 +1145,7 @@ async function sendQuestion(){
   const inp=$('question-input');
   const q=inp.value.trim();
   if(!q) return;
-  if(!getTier()){ showTierOverlay(); return; }
+  if(!getTier()||!getLicenseKey()){ showLicenseOverlay(); return; }
   if(!canQuery()){
     const t=TIERS[getTier()];
     const days=getDaysUntilReset();
@@ -1254,33 +1269,36 @@ function toggleMic(){
 // Init mic check on load
 // ── MAIN STARTUP ──────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
-  // Version gate — changing APP_VERSION forces fresh ToS+Tier on all devices
-  var APP_VERSION='1.3';
+  // Version gate — bump to force fresh login on all devices
+  var APP_VERSION='2.0';
   if(localStorage.getItem('ad_version')!==APP_VERSION){
     localStorage.removeItem('ad_tos');
     localStorage.removeItem('ad_tier');
+    localStorage.removeItem('ad_license_key');
+    localStorage.removeItem('ad_key_validated_at');
     localStorage.removeItem('ad_count');
     localStorage.setItem('ad_version',APP_VERSION);
   }
 
-  // Record first visit date for 30-day rolling reset
   if(!localStorage.getItem('ad_signup')){
     localStorage.setItem('ad_signup',new Date().toISOString());
     localStorage.setItem('ad_period','0');
   }
   resetIfNewPeriod();
 
-  // ToS is VISIBLE by default in CSS.
-  // We only HIDE it if the user has already accepted it.
-  if(checkTos()){
+  // Startup flow: ToS → License Key → App
+  if(!checkTos()){
+    // ToS visible by default in CSS — JS hides it only when accepted
+  } else if(!getTier()||!getLicenseKey()){
+    // No valid license — show key entry
     document.getElementById('tos-overlay').classList.add('hidden');
-    if(!getTier()){
-      showTierOverlay();
-    } else {
-      updateQueryBar();
-    }
+    showLicenseOverlay();
+  } else {
+    // Valid license stored — go straight to app, re-validate in background
+    document.getElementById('tos-overlay').classList.add('hidden');
+    updateQueryBar();
+    revalidateIfNeeded();
   }
-  // If ToS not accepted — it stays visible (no JS needed)
 });
 
 // ── MIC CHECK ─────────────────────────────────────────────────
