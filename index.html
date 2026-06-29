@@ -521,7 +521,7 @@ function loginWithPatreon(){
     '?response_type=code'+
     '&client_id='+encodeURIComponent(PATREON_CLIENT_ID_HTML)+
     '&redirect_uri='+encodeURIComponent(PATREON_REDIRECT)+
-    '&scope=mypatronage'+
+    '&scope=identity.memberships'+
     '&state='+encodeURIComponent(state);
   window.location.href=url;
 }
@@ -529,13 +529,9 @@ function loginWithPatreon(){
 function getPatreonToken(){ return localStorage.getItem('ad_patreon_token')||''; }
 
 async function handlePatreonCallback(code, returnedState){
-  // Verify state matches to prevent CSRF
-  var savedState=sessionStorage.getItem('patreon_state')||'';
-  sessionStorage.removeItem('patreon_state');
-  if(savedState&&returnedState&&savedState!==returnedState){
-    console.warn('Patreon state mismatch — possible CSRF');
-    return;
-  }
+  // Safety net — ensure ToS is hidden before showing anything
+  var tosEl=document.getElementById('tos-overlay');
+  if(tosEl) tosEl.classList.add('hidden');
   // Show validating status
   showLicenseOverlay();
   var statusEl=document.getElementById('license-status');
@@ -1396,9 +1392,27 @@ window.addEventListener('DOMContentLoaded',()=>{
   var urlParams=new URLSearchParams(window.location.search);
   var patreonCode=urlParams.get('code');
   var patreonState=urlParams.get('state');
-  if(patreonCode){
-    // Returned from Patreon OAuth via callback page — handle now
+  var patreonError=urlParams.get('error');
+
+  if(patreonCode||patreonError){
+    // Returning from Patreon — immediately hide ToS overlay
+    // (ToS is display:block by default and must be hidden before
+    //  showing any other overlay or the ToS covers everything)
+    var tosEl=document.getElementById('tos-overlay');
+    if(tosEl) tosEl.classList.add('hidden');
+    // Clean the URL so code/state don't show in address bar
     window.history.replaceState({},'',window.location.pathname);
+    if(patreonError){
+      // Patreon returned an error (e.g. user clicked Deny, or invalid scope)
+      showLicenseOverlay();
+      var errEl=document.getElementById('license-error');
+      if(errEl){
+        errEl.textContent='Patreon login was cancelled or denied. Please try again.';
+        errEl.style.display='block';
+      }
+      return;
+    }
+    // Success — process the auth code
     handlePatreonCallback(patreonCode,patreonState);
     return;
   }
@@ -1432,18 +1446,4 @@ window.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('tos-overlay').classList.add('hidden');
     updateQueryBar();
     revalidateIfNeeded();
-    revalidatePatreonIfNeeded();
-  }
-});
-
-// ── MIC CHECK ─────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded',()=>{
-  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SpeechRecognition){
-    const b=document.getElementById('mic-btn');
-    if(b){ b.classList.add('unsupported'); b.title='Voice not supported on this browser'; }
-  }
-});
-</script>
-</body>
-</html>
+    rev
