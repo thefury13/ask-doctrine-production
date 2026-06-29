@@ -224,6 +224,11 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
 #license-status{font-size:13px;color:var(--gold-dim);font-style:italic;text-align:center;margin-bottom:10px;display:none;}
 .license-help{font-size:11.5px;color:var(--parchment-dim);text-align:center;line-height:1.75;border-top:1px solid var(--border);padding-top:12px;}
 .license-help a{color:var(--gold-dim);text-decoration:none;}
+#patreon-btn{width:100%;background:#FF424D;border:none;color:#ffffff;font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:13px;border-radius:3px;cursor:pointer;transition:opacity .2s;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:10px;}
+#patreon-btn:hover{opacity:.88;}
+.license-divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--parchment-dim);font-size:11px;font-family:'Cinzel',serif;letter-spacing:.1em;}
+.license-divider::before,.license-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
 
 /* QUERY BAR */
 #query-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-family:'Cinzel',serif;font-size:9.5px;letter-spacing:.08em;color:var(--gold-dim);text-transform:uppercase;}
@@ -348,7 +353,12 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
     <div id="license-error"></div>
     <div id="license-status"></div>
     <button id="license-submit-btn" onclick="submitLicenseKey()">
-      Activate My Subscription &#10022;
+      Activate Gumroad Subscription &#10022;
+    </button>
+    <div class="license-divider">OR</div>
+    <button id="patreon-btn" onclick="loginWithPatreon()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><circle cx="14.5" cy="9" r="6.5"/><rect x="2" y="2" width="4" height="20" rx="1"/></svg>
+      Login with Patreon
     </button>
     <div class="license-help">
       Your key was emailed to you by Gumroad after purchase.<br>
@@ -440,6 +450,7 @@ function acceptTos(){
   } else {
     updateQueryBar();
     revalidateIfNeeded();
+    revalidatePatreonIfNeeded();
   }
 }
 function hasPDF(){ const t=TIERS[getTier()]; return !!(t&&t.pdf); }
@@ -493,6 +504,94 @@ function showLicenseOverlay(){
 function hideLicenseOverlay(){
   const el=document.getElementById('license-overlay');
   if(el) el.classList.remove('open');
+}
+
+
+// ══════════════════════════════════════════════════════════
+//  PATREON OAUTH
+// ══════════════════════════════════════════════════════════
+var PATREON_CLIENT_ID_HTML='5iKah4lDX1FgSnbHFjh4FuP6cDtny_iGgbZdRVs8lO1aZ8YF2vOKVQWBoE2c7Tpg';
+var PATREON_REDIRECT='https://thefury13.github.io/ask-doctrine-production';
+
+function loginWithPatreon(){
+  // Generate and store state token to prevent CSRF
+  var state=Math.random().toString(36).substring(2)+Date.now().toString(36);
+  sessionStorage.setItem('patreon_state',state);
+  var url='https://www.patreon.com/oauth2/authorize'+
+    '?response_type=code'+
+    '&client_id='+encodeURIComponent(PATREON_CLIENT_ID_HTML)+
+    '&redirect_uri='+encodeURIComponent(PATREON_REDIRECT)+
+    '&scope=identity%20identity.memberships'+
+    '&state='+encodeURIComponent(state);
+  window.location.href=url;
+}
+
+function getPatreonToken(){ return localStorage.getItem('ad_patreon_token')||''; }
+
+async function handlePatreonCallback(code, returnedState){
+  // Verify state matches to prevent CSRF
+  var savedState=sessionStorage.getItem('patreon_state')||'';
+  sessionStorage.removeItem('patreon_state');
+  if(savedState&&returnedState&&savedState!==returnedState){
+    console.warn('Patreon state mismatch — possible CSRF');
+    return;
+  }
+  // Show validating status
+  showLicenseOverlay();
+  var statusEl=document.getElementById('license-status');
+  var errEl=document.getElementById('license-error');
+  if(statusEl){statusEl.textContent='Verifying your Patreon membership…';statusEl.style.display='block';}
+  if(errEl) errEl.style.display='none';
+  // Clean URL — remove code and state from address bar
+  window.history.replaceState({},'',PATREON_REDIRECT);
+  try{
+    var res=await fetch(WORKER_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'patreon_callback',code:code})
+    });
+    var data=await res.json();
+    if(data.valid&&data.tier){
+      // Store Patreon token and tier
+      localStorage.setItem('ad_patreon_token',data.access_token||'');
+      localStorage.setItem('ad_key_validated_at',Date.now().toString());
+      setLicenseTier(data.tier,'PATREON-'+data.tier.toUpperCase());
+      if(statusEl){statusEl.textContent='✓ Patreon membership verified — Welcome to Ask Doctrine '+
+        (TIERS[data.tier]?TIERS[data.tier].name:'')+'!';statusEl.style.display='block';}
+      setTimeout(function(){hideLicenseOverlay();updateQueryBar();},1400);
+    } else {
+      if(errEl){errEl.textContent=data.error||'Patreon verification failed. Please try again.';errEl.style.display='block';}
+      if(statusEl) statusEl.style.display='none';
+    }
+  }catch(e){
+    if(errEl){errEl.textContent='Connection error. Please try again.';errEl.style.display='block';}
+    if(statusEl) statusEl.style.display='none';
+  }
+}
+
+async function revalidatePatreonIfNeeded(){
+  var token=getPatreonToken();
+  if(!token) return;
+  var last=parseInt(localStorage.getItem('ad_key_validated_at')||'0',10);
+  if(Date.now()-last<86400000) return;
+  try{
+    var res=await fetch(WORKER_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({action:'patreon_revalidate',access_token:token})
+    });
+    var data=await res.json();
+    if(data.valid&&data.tier){
+      localStorage.setItem('ad_key_validated_at',Date.now().toString());
+      localStorage.setItem('ad_tier',data.tier);
+    } else {
+      localStorage.removeItem('ad_tier');
+      localStorage.removeItem('ad_license_key');
+      localStorage.removeItem('ad_patreon_token');
+      localStorage.removeItem('ad_key_validated_at');
+      showLicenseOverlay();
+    }
+  }catch(e){}
 }
 
 async function submitLicenseKey(){
@@ -1293,6 +1392,16 @@ function toggleMic(){
 // Init mic check on load
 // ── MAIN STARTUP ──────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
+  // ── Detect Patreon OAuth callback ──────────────────────────
+  var urlParams=new URLSearchParams(window.location.search);
+  var patreonCode=urlParams.get('code');
+  var patreonState=urlParams.get('state');
+  if(patreonCode){
+    // Returned from Patreon OAuth — handle callback
+    handlePatreonCallback(patreonCode,patreonState);
+    return;
+  }
+
   // Version gate — bump to force fresh login on all devices
   var APP_VERSION='2.0';
   if(localStorage.getItem('ad_version')!==APP_VERSION){
@@ -1322,6 +1431,7 @@ window.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('tos-overlay').classList.add('hidden');
     updateQueryBar();
     revalidateIfNeeded();
+    revalidatePatreonIfNeeded();
   }
 });
 
