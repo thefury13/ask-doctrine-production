@@ -511,7 +511,7 @@ function hideLicenseOverlay(){
 //  PATREON OAUTH
 // ══════════════════════════════════════════════════════════
 var PATREON_CLIENT_ID_HTML='5iKah4lDX1FgSnbHFjh4FuP6cDtny_iGgbZdRVs8lO1aZ8YF2vOKVQWBoE2c7Tpg';
-var PATREON_REDIRECT='https://thefury13.github.io/ask-doctrine-production';
+var PATREON_REDIRECT='https://thefury13.github.io/ask-doctrine-production/patreon-callback';
 
 function loginWithPatreon(){
   // Generate and store state token to prevent CSRF
@@ -521,7 +521,7 @@ function loginWithPatreon(){
     '?response_type=code'+
     '&client_id='+encodeURIComponent(PATREON_CLIENT_ID_HTML)+
     '&redirect_uri='+encodeURIComponent(PATREON_REDIRECT)+
-    '&scope=identity%20identity.memberships'+
+    '&scope=identity%5Bemail%5D%20identity.memberships'+
     '&state='+encodeURIComponent(state);
   window.location.href=url;
 }
@@ -1397,7 +1397,8 @@ window.addEventListener('DOMContentLoaded',()=>{
   var patreonCode=urlParams.get('code');
   var patreonState=urlParams.get('state');
   if(patreonCode){
-    // Returned from Patreon OAuth — handle callback
+    // Returned from Patreon OAuth via callback page — handle now
+    window.history.replaceState({},'',window.location.pathname);
     handlePatreonCallback(patreonCode,patreonState);
     return;
   }
