@@ -1388,36 +1388,40 @@ function toggleMic(){
 // Init mic check on load
 // ── MAIN STARTUP ──────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
-  // ── Detect Patreon OAuth callback ──────────────────────────
-  var urlParams=new URLSearchParams(window.location.search);
-  var patreonCode=urlParams.get('code');
-  var patreonState=urlParams.get('state');
-  var patreonError=urlParams.get('error');
-
-  if(patreonCode||patreonError){
-    // Returning from Patreon — immediately hide ToS overlay
-    // (ToS is display:block by default and must be hidden before
-    //  showing any other overlay or the ToS covers everything)
-    var tosEl=document.getElementById('tos-overlay');
-    if(tosEl) tosEl.classList.add('hidden');
-    // Clean the URL so code/state don't show in address bar
-    window.history.replaceState({},'',window.location.pathname);
-    if(patreonError){
-      // Patreon returned an error (e.g. user clicked Deny, or invalid scope)
-      showLicenseOverlay();
-      var errEl=document.getElementById('license-error');
-      if(errEl){
-        errEl.textContent='Patreon login was cancelled or denied. Please try again.';
-        errEl.style.display='block';
+  // ── Patreon OAuth callback detection ───────────────────────
+  // Only treat as Patreon return if BOTH code AND state present
+  // (Patreon always sends both — prevents false positives from
+  //  stale URLs or unrelated query parameters)
+  try{
+    var urlParams=new URLSearchParams(window.location.search);
+    var patreonCode=urlParams.get('code');
+    var patreonState=urlParams.get('state');
+    var patreonError=urlParams.get('error');
+    var isPatreonReturn=patreonState&&(patreonCode||patreonError);
+    if(isPatreonReturn){
+      // Clean URL immediately — removes stale params on next load
+      window.history.replaceState({},'',window.location.pathname);
+      // Hide ToS before anything else — it is display:block by default
+      var tosEl=document.getElementById('tos-overlay');
+      if(tosEl) tosEl.classList.add('hidden');
+      if(patreonError){
+        showLicenseOverlay();
+        var errEl=document.getElementById('license-error');
+        if(errEl){
+          errEl.textContent='Patreon login was cancelled. Please try again.';
+          errEl.style.display='block';
+        }
+        return;
       }
+      handlePatreonCallback(patreonCode,patreonState);
       return;
     }
-    // Success — process the auth code
-    handlePatreonCallback(patreonCode,patreonState);
-    return;
+  }catch(e){
+    // If Patreon detection fails for any reason — fall through
+    // to normal startup below so ToS always works
   }
 
-  // Version gate — bump to force fresh login on all devices
+  // ── Normal startup ──────────────────────────────────────────
   var APP_VERSION='2.0';
   if(localStorage.getItem('ad_version')!==APP_VERSION){
     localStorage.removeItem('ad_tos');
@@ -1446,4 +1450,18 @@ window.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('tos-overlay').classList.add('hidden');
     updateQueryBar();
     revalidateIfNeeded();
-    rev
+    revalidatePatreonIfNeeded();
+  }
+});
+
+// ── MIC CHECK ─────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded',()=>{
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    const b=document.getElementById('mic-btn');
+    if(b){ b.classList.add('unsupported'); b.title='Voice not supported on this browser'; }
+  }
+});
+</script>
+</body>
+</html>
