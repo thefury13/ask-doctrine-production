@@ -1293,9 +1293,18 @@ async function sendQuestion(){
     renderAnswerMessage(answer,q);
   }catch(err){
     loader.remove();
-    var errMsg = err.message||'Unknown error';
+    var errMsg=err.message||'Unknown error';
+    // Network errors
     if(errMsg.indexOf('Failed to fetch')>-1||errMsg.indexOf('NetworkError')>-1){
-      errMsg = 'Connection error. Please check your internet connection and try again.';
+      errMsg='Connection error. Please check your internet connection and try again.';
+    }
+    // Anthropic overload — show clear guidance after 3 automatic retries already tried
+    else if(errMsg.indexOf('overload')>-1||errMsg.indexOf('529')>-1||errMsg.indexOf('busy')>-1){
+      errMsg='Anthropic\u2019s servers are currently busy. Your query was automatically retried 3 times. Please wait 30\u201360 seconds and ask your question again.';
+    }
+    // Service unavailable
+    else if(errMsg.indexOf('503')>-1||errMsg.indexOf('502')>-1||errMsg.indexOf('unavailable')>-1){
+      errMsg='The service is temporarily unavailable. Please wait a moment and try again.';
     }
     renderErrorMessage(errMsg);
     conversationHistory.pop();
