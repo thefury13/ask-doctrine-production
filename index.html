@@ -1,9 +1,9 @@
 <!--
   Ask Doctrine — Classical Theological Reference
   Copyright © 2026 Ask Doctrine. All Rights Reserved.
-  US Copyright Registration Pending.
+  US Copyright Registration Pending.å
 -->
-<!DOCTYPE html>
+<!DOCTYPE html>å
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
@@ -226,7 +226,7 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
 .license-help a{color:var(--gold-dim);text-decoration:none;}
 #patreon-btn{width:100%;background:#FF424D;border:none;color:#ffffff;font-family:'Cinzel',serif;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:13px;border-radius:3px;cursor:pointer;transition:opacity .2s;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:10px;}
 #patreon-btn:hover{opacity:.88;}
-.license-divider{display:flex;align-items:center;gap:10px;margin:12px 0;color:var(--parchment-dim);font-size:11px;font-family:'Cinzel',serif;letter-spacing:.1em;}
+.license-divider{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--gold-dim);font-size:18px;font-weight:bold;font-family:'Cinzel',serif;letter-spacing:.2em;}
 .license-divider::before,.license-divider::after{content:'';flex:1;height:1px;background:var(--border);}
 
 
@@ -339,9 +339,29 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
 <div id="license-overlay">
   <div id="license-modal">
     <h2>Ask Doctrine</h2>
-    <div class="license-subtitle">
-      Enter the license key from your Gumroad confirmation email<br>
-      to activate your subscription on this device.
+
+    <!-- ── PATREON LOGIN — PRIMARY ── -->
+    <div class="license-input-label" style="text-align:center;margin-bottom:8px;">
+      Patreon Subscribers
+    </div>
+    <button id="patreon-btn" onclick="loginWithPatreon()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><circle cx="14.5" cy="9" r="6.5"/><rect x="2" y="2" width="4" height="20" rx="1"/></svg>
+      Login with Patreon
+    </button>
+    <div class="license-help" style="border-top:none;padding-top:0;margin-bottom:4px;">
+      Active Patreon subscribers click above to verify<br>
+      your membership and unlock your plan.<br><br>
+      <strong style="color:var(--gold-dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;">UPGRADING YOUR PATREON PLAN</strong><br>
+      To upgrade or change your Patreon tier visit:<br>
+      <a href="https://www.patreon.com" target="_blank">www.patreon.com</a> &rarr; your membership &rarr; Edit Pledge
+    </div>
+
+    <!-- ── OR DIVIDER ── -->
+    <div class="license-divider">OR</div>
+
+    <!-- ── GUMROAD LICENSE KEY — SECONDARY ── -->
+    <div class="license-input-label" style="text-align:center;margin-bottom:8px;">
+      Gumroad Subscribers
     </div>
     <div class="license-input-wrap">
       <label class="license-input-label" for="license-key-input">Your License Key</label>
@@ -355,22 +375,16 @@ html,body{height:100%;background:var(--bg);color:var(--ink);font-family:'EB Gara
     <button id="license-submit-btn" onclick="submitLicenseKey()">
       Activate Gumroad Subscription &#10022;
     </button>
-    <div class="license-divider">OR</div>
-    <button id="patreon-btn" onclick="loginWithPatreon()">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><circle cx="14.5" cy="9" r="6.5"/><rect x="2" y="2" width="4" height="20" rx="1"/></svg>
-      Login with Patreon
-    </button>
     <div class="license-help">
-      Your key was emailed to you by Gumroad after purchase.<br>
+      Your license key was emailed to you by Gumroad after purchase.<br>
       Check your inbox for a message from <strong>gumroad.com</strong>.<br><br>
-      Not yet subscribed?&nbsp;
-      <a href="https://www.askdoctrine.com" target="_blank">Visit Ask Doctrine &rarr;</a><br><br>
-      <strong style="color:var(--gold-dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;">UPGRADING YOUR PLAN</strong><br>
-      To upgrade to Pro or Ministry:<br>
+      <strong style="color:var(--gold-dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.08em;">UPGRADING YOUR GUMROAD PLAN</strong><br>
       1. Subscribe to the higher plan at <a href="https://www.askdoctrine.com" target="_blank">www.askdoctrine.com</a><br>
       2. Cancel your current plan in your Gumroad account<br>
-      3. Enter your new license key here<br>
+      3. Enter your new license key above<br>
       4. Your new tier activates immediately<br><br>
+      Not yet subscribed?&nbsp;
+      <a href="https://www.askdoctrine.com" target="_blank">Visit Ask Doctrine &rarr;</a><br><br>
       Need help?&nbsp;
       <a href="mailto:1stechodesign@gmail.com">Email 1stechodesign@gmail.com</a>
     </div>
@@ -489,10 +503,11 @@ function setLicenseTier(tier,key){
   localStorage.setItem('ad_tier',tier);
   localStorage.setItem('ad_license_key',key);
   localStorage.setItem('ad_key_validated_at',Date.now().toString());
-  if(!localStorage.getItem('ad_signup')){
-    localStorage.setItem('ad_signup',new Date().toISOString());
-    localStorage.setItem('ad_period','0');
-  }
+  // Always reset signup date when a new key is activated
+  // This ensures the 30-day reset counter starts from today
+  localStorage.setItem('ad_signup',new Date().toISOString());
+  localStorage.setItem('ad_period','0');
+  localStorage.setItem('ad_count','0');
 }
 
 function showLicenseOverlay(){
